@@ -3,228 +3,295 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Latihan Hafal Sifir</title>
 
 <style>
+
 body{
-  font-family: Arial, sans-serif;
-  background:#f5f7fb;
-  padding:20px;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  min-height:100vh;
+  margin:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-.container{
-  max-width:500px;
-  margin:auto;
+.card{
   background:white;
+  width:100%;
+  max-width:420px;
   padding:25px;
-  border-radius:15px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+  border-radius:16px;
+  box-shadow:0 12px 25px rgba(0,0,0,0.15);
   text-align:center;
 }
 
-select,input,button{
+/* Header */
+h1{
+  color:#1e40af;
+  margin-bottom:5px;
+}
+
+.subtitle{
+  font-size:13px;
+  color:#555;
+  margin-bottom:15px;
+}
+
+/* Input */
+select,input{
   width:100%;
-  padding:12px;
-  margin:8px 0;
+  padding:10px;
+  margin:6px 0;
   border-radius:8px;
   border:1px solid #ddd;
+  font-size:14px;
 }
 
+/* Soalan */
+.soalan{
+  font-size:28px;
+  font-weight:bold;
+  margin:20px 0;
+  color:#2563eb;
+  animation:pop 0.3s;
+}
+
+@keyframes pop{
+  from{transform:scale(0.8);opacity:0;}
+  to{transform:scale(1);opacity:1;}
+}
+
+/* Button */
 button{
-  background:#2563eb;
-  color:white;
+  width:100%;
+  padding:10px;
+  margin:6px 0;
   border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.btn-check{background:#10b981;color:white;}
+.btn-check:hover{background:#059669;}
+
+.btn-next{background:#2563eb;color:white;}
+.btn-next:hover{background:#1d4ed8;}
+
+.btn-home{background:#6b7280;color:white;}
+.btn-home:hover{background:#4b5563;}
+
+/* Score */
+.score{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+  font-size:13px;
   font-weight:bold;
 }
 
-#question{
-  font-size:22px;
+.betul{color:green;}
+.salah{color:red;}
+
+#msg{
   font-weight:bold;
-  margin:15px 0;
+  margin:5px 0;
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="card">
 
-<h2>Latihan Hafal Sifir</h2>
+<h1>Latihan Sifir</h1>
+<div class="subtitle">Belajar & Hafal Dengan Seronok 🎯</div>
 
-<label>Kelas</label>
-<select id="kelasSelect"></select>
 
-<label>Nama</label>
-<select id="muridSelect"></select>
-
+<!-- Setting -->
 <label>Pilih Sifir</label>
 <select id="sifir">
-<option value="">Pilih</option>
-<option>1</option><option>2</option><option>3</option>
-<option>4</option><option>5</option><option>6</option>
-<option>7</option><option>8</option><option>9</option>
-<option>10</option><option>11</option><option>12</option>
+  <option value="">Pilih</option>
+  <option>1</option><option>2</option><option>3</option><option>4</option>
+  <option>5</option><option>6</option><option>7</option><option>8</option>
+  <option>9</option><option>10</option><option>11</option><option>12</option>
 </select>
 
-<button onclick="mula()">Mula Latihan</button>
 
-<div id="quiz" style="display:none;">
+<label>Mode Soalan</label>
+<select id="mode">
+  <option value="urutan">Ikut Urutan (1 → 12)</option>
+  <option value="rawak">Rawak</option>
+</select>
 
-<div id="question"></div>
-<input type="number" id="jawapan" placeholder="Jawapan">
 
-<button onclick="semak()">Semak</button>
+<!-- Soalan -->
+<div id="soalan" class="soalan">
+Sila pilih sifir
+</div>
+
+
+<!-- Jawapan -->
+<input type="number" id="jawapan" placeholder="Taip jawapan...">
+
+
+<!-- Button -->
+<button class="btn-check" onclick="semak()">
+✔️ Semak Jawapan
+</button>
+
+<button class="btn-next" onclick="next()">
+➡️ Soalan Seterusnya
+</button>
+
 
 <p id="msg"></p>
 
-<p>Skor: <span id="betul">0</span> / <span id="total">0</span></p>
 
-<button onclick="tamat()">Tamat & Simpan</button>
+<!-- Score -->
+<div class="score">
+
+  <div class="betul">
+    Betul: <span id="betul">0</span>
+  </div>
+
+  <div class="salah">
+    Salah: <span id="salah">0</span>
+  </div>
 
 </div>
+
 
 <br>
-<button onclick="location.href='index.html'">Menu Utama</button>
+
+<button class="btn-home" onclick="location.href='index.html'">
+🏠 Menu Utama
+</button>
+
 
 </div>
+
+
 
 <script>
 
-const API_URL="https://uziefozgozmnckfssoyv.supabase.co";
-const API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
+let sifir = 0;
+let current = 1;
+let jawapanBetul = 0;
 
-let students=[];
-let student_id=null;
-let sifir=0;
-let betul=0;
-let total=0;
-let soalan=0;
+let betul = 0;
+let salah = 0;
 
 
-// Load murid
-async function loadMurid(){
+// Bila tukar sifir
+document.getElementById("sifir").addEventListener("change", function(){
 
-const res=await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
-headers:{apikey:API_KEY,Authorization:`Bearer ${API_KEY}`}
+  sifir = parseInt(this.value);
+
+  current = 1;
+
+  betul = 0;
+  salah = 0;
+
+  updateScore();
+
+  next();
+
 });
 
-students=await res.json();
 
-const kelasSet=new Set();
-students.forEach(s=>kelasSet.add(s.kelas));
 
-const kelas=document.getElementById("kelasSelect");
-kelas.innerHTML="<option value=''>Pilih Kelas</option>";
+// Generate soalan
+function next(){
 
-kelasSet.forEach(k=>{
-let o=document.createElement("option");
-o.value=k;
-o.textContent=k;
-kelas.appendChild(o);
-});
+  if(!sifir){
+    document.getElementById("soalan").innerText =
+      "Pilih sifir dahulu";
+    return;
+  }
 
-updateMurid();
+
+  const mode = document.getElementById("mode").value;
+
+  let gandaan;
+
+
+  if(mode === "urutan"){
+
+    gandaan = current;
+
+    current++;
+    if(current > 12) current = 1;
+
+  }else{
+
+    gandaan = Math.floor(Math.random()*12)+1;
+
+  }
+
+
+  jawapanBetul = sifir * gandaan;
+
+
+  document.getElementById("soalan").innerText =
+    `${sifir} × ${gandaan} = ?`;
+
+
+  document.getElementById("jawapan").value = "";
+  document.getElementById("msg").innerText = "";
+
+  document.getElementById("jawapan").focus();
+
 }
 
 
-function updateMurid(){
 
-const kelas=document.getElementById("kelasSelect").value;
-const murid=document.getElementById("muridSelect");
-
-murid.innerHTML="<option value=''>Pilih Murid</option>";
-
-students.forEach(s=>{
-if(s.kelas===kelas){
-let o=document.createElement("option");
-o.value=s.id;
-o.textContent=s.nama;
-murid.appendChild(o);
-}
-});
-}
-
-
-function mula(){
-
-student_id=document.getElementById("muridSelect").value;
-sifir=document.getElementById("sifir").value;
-
-if(!student_id||!sifir){
-alert("Lengkapkan semua pilihan");
-return;
-}
-
-betul=0;
-total=0;
-
-document.getElementById("quiz").style.display="block";
-
-nextSoalan();
-}
-
-
-function nextSoalan(){
-soalan=Math.floor(Math.random()*12)+1;
-document.getElementById("question").innerText=`${sifir} × ${soalan} = ?`;
-document.getElementById("jawapan").value="";
-}
-
-
+// Semak jawapan
 function semak(){
 
-let j=document.getElementById("jawapan").value;
-if(j==="")return;
+  const j = document.getElementById("jawapan").value;
 
-total++;
-
-if(j==sifir*soalan){
-betul++;
-document.getElementById("msg").innerText="Betul!";
-}else{
-document.getElementById("msg").innerText=`Salah. Jawapan ${sifir*soalan}`;
-}
-
-document.getElementById("betul").innerText=betul;
-document.getElementById("total").innerText=total;
-
-setTimeout(nextSoalan,1000);
-}
+  if(j === ""){
+    alert("Isi jawapan dulu 😊");
+    return;
+  }
 
 
-async function tamat(){
+  if(parseInt(j) === jawapanBetul){
 
-if(total==0)return;
+    betul++;
+    document.getElementById("msg").innerText = "✅ Betul!";
+    document.getElementById("msg").style.color="green";
 
-await fetch(`${API_URL}/rest/v1/latihan`,{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-apikey:API_KEY,
-Authorization:`Bearer ${API_KEY}`
-},
-body:JSON.stringify({
-student_id,
-sifir,
-betul,
-total
-})
-});
+  }else{
 
-alert("Rekod latihan disimpan!");
+    salah++;
+    document.getElementById("msg").innerText =
+      `❌ Salah. Jawapan: ${jawapanBetul}`;
+    document.getElementById("msg").style.color="red";
 
-location.reload();
+  }
+
+  updateScore();
+
 }
 
 
-document.addEventListener("DOMContentLoaded",function(){
-loadMurid();
-document.getElementById("kelasSelect")
-.addEventListener("change",updateMurid);
-});
+
+// Update score
+function updateScore(){
+
+  document.getElementById("betul").innerText = betul;
+  document.getElementById("salah").innerText = salah;
+
+}
 
 </script>
 
 </body>
 </html>
-
