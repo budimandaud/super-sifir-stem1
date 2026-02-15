@@ -20,41 +20,31 @@ body{
 .card{
   position: relative;
 
-  background:
-    linear-gradient(
-      135deg,
-      #2563eb 0%,
-      #2563eb 60%,
-      rgba(255,255,255,0.97) 60%,
-      rgba(255,255,255,0.97) 100%
-    );
+  background: white;
 
   width:100%;
   max-width:420px;
-  padding:30px 25px;
+  padding:30px 25px 90px; /* ruang hero bawah */
   border-radius:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+  box-shadow:0 6px 18px rgba(0,0,0,0.1);
   text-align:center;
   overflow:hidden;
 }
-
-/* HERO WATERMARK */
 .card::after{
   content:"";
   position:absolute;
-  bottom:-10px;
-  right:-10px;
+  bottom:5px;
+  right:5px;
 
-  width:180px;
-  height:220px;
+  width:160px;
+  height:200px;
 
   background:url("assets/bg-hero.png") no-repeat center;
   background-size:contain;
 
-  opacity:0.4;   /* buat samar */
+  opacity:0.35;
   pointer-events:none;
 }
-
 
 
 .school-logo{
@@ -113,6 +103,14 @@ button{
 .btn-rank:hover{
   background:#d97706;
 }
+.btn-rules{
+  background:#64748b; /* kelabu biru */
+  color:white;
+}
+
+.btn-rules:hover{
+  background:#475569;
+}
 
 .footer{
   margin-top:20px;
@@ -154,13 +152,14 @@ button{
     🔐 Login Guru
   </button>
 
-  <button onclick="location.href='rules.html'">
-    📜 Peraturan Program
+  <button class="btn-rules" onclick="location.href='rules.html'">
+  📜 Peraturan Program
   </button>
 
 
   <div class="footer">
     © 2026 SK (LKTP) Tembangau 1
+
 
 
 
