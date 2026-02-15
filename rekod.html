@@ -1,29 +1,41 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="UTF-8">
-<title>Semak Rekod Murid - Super Sifir</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Semak Rekod - Super Sifir Digital STEM1</title>
 
 <style>
 body{
   font-family: Arial, sans-serif;
-  max-width:700px;
-  margin:auto;
-  padding:20px;
   background:#f5f7fb;
+  padding:20px;
 }
 
 .container{
+  max-width:700px;
+  margin:auto;
   background:white;
   padding:20px;
   border-radius:12px;
   box-shadow:0 4px 10px rgba(0,0,0,0.05);
 }
 
-select, button{
-  padding:10px;
+h1{
+  text-align:center;
+  margin-bottom:5px;
+}
+
+h3{
+  text-align:center;
+  margin-top:0;
+  color:#444;
+}
+
+select,button{
   width:100%;
+  padding:10px;
   margin:8px 0;
   border-radius:6px;
   border:1px solid #ddd;
@@ -33,20 +45,15 @@ button{
   background:#2563eb;
   color:white;
   border:none;
-  cursor:pointer;
   font-weight:bold;
 }
 
-button:hover{
-  background:#1d4ed8;
-}
-
 .card{
-  border:1px solid #ddd;
-  border-radius:8px;
-  padding:15px;
-  margin-top:15px;
   background:#fafafa;
+  border:1px solid #ddd;
+  padding:15px;
+  border-radius:8px;
+  margin-top:15px;
 }
 
 .pass{color:green;font-weight:bold;}
@@ -55,11 +62,14 @@ button:hover{
 </style>
 </head>
 
+
 <body>
 
 <div class="container">
 
-<h2>📊 Semak Rekod Murid</h2>
+<h1>Super Sifir Digital STEM1</h1>
+<h3>📊 Semak Rekod Murid</h3>
+
 
 <label>Pilih Kelas</label>
 <select id="kelasSelect">
@@ -77,7 +87,9 @@ button:hover{
 
 <br>
 
-<button onclick="logout()">Logout</button>
+<button onclick="location.href='index.html'">
+🏠 Menu Utama
+</button>
 
 </div>
 
@@ -87,65 +99,45 @@ button:hover{
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
 const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
 
-
-// 🔒 Protect page
-
 let allStudents = [];
 
 
-// ================= LOAD MURID =================
+// ================= LOAD =================
 async function loadMurid(){
 
-  try{
+  const res = await fetch(`${API_URL}/rest/v1/students?select=*`,{
+    headers:{
+      apikey:API_KEY,
+      Authorization:`Bearer ${API_KEY}`
+    }
+  });
 
-    const res = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
-      headers:{
-        apikey:API_KEY,
-        Authorization:`Bearer ${API_KEY}`
-      }
-    });
-
-    if(!res.ok) throw new Error("Fetch gagal");
-
-    allStudents = await res.json();
+  allStudents = await res.json();
 
 
-    const kelasSet = new Set();
-    allStudents.forEach(s=>{
-      if(s.kelas) kelasSet.add(s.kelas);
-    });
+  const kelasSet = new Set();
+  allStudents.forEach(s=>kelasSet.add(s.kelas));
 
+  const kelas = document.getElementById("kelasSelect");
+  kelas.innerHTML='<option value="">Pilih Kelas</option>';
 
-    const kelasSelect = document.getElementById("kelasSelect");
-    kelasSelect.innerHTML='<option value="">Pilih Kelas</option>';
-
-
-    kelasSet.forEach(k=>{
-      const o=document.createElement("option");
-      o.value=k;
-      o.textContent=k;
-      kelasSelect.appendChild(o);
-    });
-
-
-  }catch(err){
-
-    console.error(err);
-    alert("Gagal load murid");
-
-  }
+  kelasSet.forEach(k=>{
+    const o=document.createElement("option");
+    o.value=k;
+    o.textContent=k;
+    kelas.appendChild(o);
+  });
 
 }
 
 
-// ================= UPDATE MURID =================
+// ================= UPDATE =================
 function updateMurid(){
 
   const kelas = document.getElementById("kelasSelect").value;
-  const muridSelect = document.getElementById("muridSelect");
+  const murid = document.getElementById("muridSelect");
 
-  muridSelect.innerHTML='<option value="">Pilih Murid</option>';
-
+  murid.innerHTML='<option value="">Pilih Murid</option>';
 
   allStudents.forEach(s=>{
 
@@ -154,7 +146,7 @@ function updateMurid(){
       const o=document.createElement("option");
       o.value=s.id;
       o.textContent=s.nama;
-      muridSelect.appendChild(o);
+      murid.appendChild(o);
 
     }
 
@@ -173,12 +165,11 @@ async function semak(){
     return;
   }
 
-
-  const murid = allStudents.find(x=>x.id===student_id);
+  const s = allStudents.find(x=>x.id===student_id);
 
 
   const res = await fetch(
-    `${API_URL}/rest/v1/scores?student_id=eq.${student_id}&select=sifir,markah,teacher_id`,
+    `${API_URL}/rest/v1/scores?student_id=eq.${student_id}&select=*`,
     {
       headers:{
         apikey:API_KEY,
@@ -187,79 +178,56 @@ async function semak(){
     }
   );
 
+
   const scores = await res.json();
 
 
-  // Kira ikut sifir (ambil semua percubaan)
   const record = {};
 
   scores.forEach(r=>{
-
-    if(!record[r.sifir]) record[r.sifir]=[];
-
-    record[r.sifir].push({
-      markah:r.markah,
-      teacher:r.teacher_id
-    });
-
+    record[r.sifir] = r.markah;
   });
 
 
   let html = `
     <div class="card">
-      <h3>${murid.nama} (${murid.kelas})</h3>
+      <h3>${s.nama} (${s.kelas})</h3>
   `;
 
 
   for(let i=2;i<=12;i++){
 
-    if(record[i]){
+    if(record[i] !== undefined){
 
-      const pass = record[i].filter(x=>x.markah==1);
-      const guruSet = new Set(pass.map(x=>x.teacher));
+      if(record[i]==1){
 
-
-      if(pass.length>=3 && guruSet.size>=3){
-
-        html+=`<p>Sifir ${i}: <span class="pass">✔️ Lulus Sah</span></p>`;
-
-      }else if(pass.length>0){
-
-        html+=`<p>Sifir ${i}: ⏳ ${pass.length}/3 Lulus</p>`;
+        html += `<p>Sifir ${i}: <span class="pass">✔️ Lulus</span></p>`;
 
       }else{
 
-        html+=`<p>Sifir ${i}: <span class="fail">❌ Gagal</span></p>`;
+        html += `<p>Sifir ${i}: <span class="fail">❌ Gagal</span></p>`;
 
       }
 
     }else{
 
-      html+=`<p>Sifir ${i}: <span class="wait">⚠️ Belum Cuba</span></p>`;
+      html += `<p>Sifir ${i}: <span class="wait">⚠️ Belum Cuba</span></p>`;
 
     }
 
   }
 
 
-  html+="</div>";
+  html += "</div>";
 
   document.getElementById("result").innerHTML = html;
 
 }
 
 
-// ================= LOGOUT =================
-function logout(){
-
-  localStorage.clear();
-  window.location.href="login.html";
-
-}
-
 
 // ================= START =================
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded",()=>{
 
   loadMurid();
 
