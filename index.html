@@ -9,7 +9,7 @@
 <style>
 body{
   font-family: "Segoe UI", Arial, sans-serif;
-  background:linear-gradient(135deg,#2563eb,#1e40af);
+  background:#f5f7fb;
   min-height:100vh;
   margin:0;
   display:flex;
@@ -18,103 +18,85 @@ body{
 }
 
 .card{
-  position: relative;
-
-  background: white;
-
+  background:white;
   width:100%;
   max-width:420px;
-  padding:30px 25px 90px; /* ruang hero bawah */
+  padding:25px 22px;
   border-radius:16px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.1);
+  box-shadow:0 10px 25px rgba(0,0,0,0.12);
   text-align:center;
-  overflow:hidden;
 }
-.card::after{
-  content:"";
-  position:absolute;
-  bottom:5px;
-  right:5px;
-
-  width:160px;
-  height:200px;
-
-  background:url("assets/bg-hero.png") no-repeat center;
-  background-size:contain;
-
-  opacity:1;
-  pointer-events:none;
-}
-
 
 .school-logo{
   width:90px;
-  margin-bottom:10px;
+  margin-bottom:8px;
 }
 
 .logo{
-  font-size:28px;
+  font-size:26px;
   font-weight:bold;
   color:#1e40af;
-  margin-bottom:5px;
 }
 
 .subtitle{
-  font-size:14px;
+  font-size:13px;
   color:#555;
   margin-bottom:15px;
 }
 
+
+/* SECTION */
+.section{
+  margin-top:20px;
+  text-align:left;
+}
+
+.section-title{
+  font-size:14px;
+  font-weight:bold;
+  color:#2563eb;
+  margin-bottom:8px;
+  border-left:4px solid #2563eb;
+  padding-left:6px;
+}
+
+
+/* BUTTON */
 button{
   width:100%;
   padding:12px;
-  margin:10px 0;
+  margin:6px 0;
   border:none;
   border-radius:10px;
-  font-size:16px;
+  font-size:15px;
   font-weight:bold;
   cursor:pointer;
   transition:0.2s;
 }
 
-.btn-login{
-  background:#2563eb;
-  color:white;
-}
 
-.btn-login:hover{
-  background:#1d4ed8;
-}
+/* Murid */
+.btn-latihan{background:#8b5cf6;color:white;}
+.btn-latihan:hover{background:#7c3aed;}
 
-.btn-rekod{
-  background:#10b981;
-  color:white;
-}
+.btn-rekod{background:#10b981;color:white;}
+.btn-rekod:hover{background:#059669;}
 
-.btn-rekod:hover{
-  background:#059669;
-}
 
-.btn-rank{
-  background:#f59e0b;
-  color:white;
-}
+/* Guru */
+.btn-rank{background:#f59e0b;color:white;}
+.btn-rank:hover{background:#d97706;}
 
-.btn-rank:hover{
-  background:#d97706;
-}
-.btn-rules{
-  background:#64748b; /* kelabu biru */
-  color:white;
-}
+.btn-login{background:#2563eb;color:white;}
+.btn-login:hover{background:#1d4ed8;}
 
-.btn-rules:hover{
-  background:#475569;
-}
+.btn-rules{background:#6b7280;color:white;}
+.btn-rules:hover{background:#4b5563;}
+
 
 .footer{
   margin-top:20px;
-  font-size:12px;
+  font-size:11px;
   color:#777;
 }
 </style>
@@ -125,24 +107,33 @@ button{
 
 <div class="card">
 
-  <img src="assets/logo-sk.png" class="school-logo">
+<img src="assets/logo-sk.png" class="school-logo">
 
-  <div class="logo">
-    Super Sifir Digital STEM1
-  </div>
+<div class="logo">Super Sifir Digital STEM1</div>
 
-  <div class="subtitle">
-    SK (LKTP) Tembangau 1
-  </div>
+<div class="subtitle">SK (LKTP) Tembangau 1</div>
 
-  <div class="subtitle">
-    Sistem Pemantauan Penguasaan Sifir Murid
-  </div>
 
+<!-- ================= MURID ================= -->
+<div class="section">
+
+  <div class="section-title">👦 UNTUK MURID</div>
+
+  <button class="btn-latihan" onclick="location.href='latihan.html'">
+    ✏️ Latihan Hafal Sifir
+  </button>
 
   <button class="btn-rekod" onclick="location.href='rekod.html'">
-    📊 Semak Rekod Murid
+    📊 Semak Rekod
   </button>
+
+</div>
+
+
+<!-- ================= GURU ================= -->
+<div class="section">
+
+  <div class="section-title">👨‍🏫 UNTUK GURU / ADMIN</div>
 
   <button class="btn-rank" onclick="location.href='ranking.html'">
     🏆 Ranking Murid
@@ -153,17 +144,17 @@ button{
   </button>
 
   <button class="btn-rules" onclick="location.href='rules.html'">
-  📜 Peraturan Program
+    📜 Peraturan Program
   </button>
 
-
-  <div class="footer">
-    © 2026 SK (LKTP) Tembangau 1
+</div>
 
 
+<div class="footer">
+© 2026 SK (LKTP) Tembangau 1 | STEM1
+</div>
 
+</div>
 
-
-
-
-
+</body>
+</html>
