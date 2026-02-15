@@ -66,6 +66,7 @@ button:hover{
 <h1>Super Sifir Digital STEM1</h1>
 <h3>📊 Semak Rekod Murid</h3>
 
+
 <label>Pilih Kelas</label>
 <select id="kelasSelect">
   <option value="">Pilih Kelas</option>
@@ -90,7 +91,7 @@ button:hover{
 <script>
 
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
-const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
+const API_KEY = "PASTE_API_KEY_SINI"; // <-- ganti key sendiri
 
 
 let allStudents = [];
@@ -168,4 +169,95 @@ async function semak(){
   const student = allStudents.find(s=>s.id===student_id);
 
 
-  cons
+  const res = await fetch(
+    `${API_URL}/rest/v1/scores?student_id=eq.${student_id}&select=sifir,markah,teacher_id`,
+    {
+      headers:{
+        apikey:API_KEY,
+        Authorization:`Bearer ${API_KEY}`
+      }
+    }
+  );
+
+
+  const scores = await res.json();
+
+
+  // ===== KIRA LULUS GURU BERLAINAN =====
+  const record = {};
+
+
+  scores.forEach(r=>{
+
+    if(r.markah==1){
+
+      if(!record[r.sifir]){
+        record[r.sifir] = new Set();
+      }
+
+      record[r.sifir].add(r.teacher_id);
+
+    }
+
+  });
+
+
+  // ===== PAPAR =====
+  let html=`
+    <div class="card">
+      <h3>${student.nama} (${student.kelas})</h3>
+  `;
+
+
+  for(let i=2;i<=12;i++){
+
+    if(record[i]){
+
+      const count = record[i].size;
+
+
+      if(count>=4){
+
+        html+=`
+          <p>Sifir ${i} :
+          <span class="pass">🎉 LULUS</span></p>
+        `;
+
+      }else{
+
+        html+=`
+          <p>Sifir ${i} :
+          <span class="fail">${"✔️".repeat(count)}</span></p>
+        `;
+
+      }
+
+    }else{
+
+      html+=`
+        <p>Sifir ${i} :
+        <span style="color:gray">⚠️ Belum Cuba</span></p>
+      `;
+
+    }
+
+  }
+
+
+  html+="</div>";
+
+  document.getElementById("result").innerHTML = html;
+
+}
+
+
+// ================= START =================
+loadMurid();
+
+document.getElementById("kelasSelect")
+  .addEventListener("change",updateMurid);
+
+</script>
+
+</body>
+</html>
