@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Ranking Murid</title>
+<title>Ranking - Super Sifir Digital STEM1</title>
 
 <style>
 body{
@@ -22,10 +22,21 @@ body{
   box-shadow:0 4px 10px rgba(0,0,0,0.05);
 }
 
+h1{
+  text-align:center;
+  margin-bottom:5px;
+}
+
+h3{
+  text-align:center;
+  margin-top:0;
+  color:#444;
+}
+
 select,button{
   width:100%;
   padding:10px;
-  margin:10px 0;
+  margin:8px 0;
   border-radius:6px;
   border:1px solid #ddd;
 }
@@ -42,6 +53,7 @@ button{
   border:1px solid #ddd;
   padding:15px;
   border-radius:8px;
+  margin-top:15px;
 }
 
 .rank{
@@ -60,7 +72,9 @@ button{
 
 <div class="container">
 
-<h2>🏆 Ranking Murid (Lulus Sah)</h2>
+<h1>Super Sifir Digital STEM1</h1>
+<h3>🏆 Ranking Murid (Lulus Sah)</h3>
+
 
 <label>Pilih Kelas</label>
 <select id="kelasSelect">
@@ -69,7 +83,11 @@ button{
 
 <div id="ranking"></div>
 
-<button onclick="logout()">Logout</button>
+<br>
+
+<button onclick="location.href='index.html'">
+🏠 Menu Utama
+</button>
 
 </div>
 
@@ -78,7 +96,6 @@ button{
 
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
 const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
-
 
 let students = [];
 let scores = [];
@@ -89,22 +106,22 @@ async function loadData(){
 
   try{
 
-    // Students
+    // Ambil murid
     const r1 = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
       headers:{
-        "apikey":API_KEY,
-        "Authorization":`Bearer ${API_KEY}`
+        apikey:API_KEY,
+        Authorization:`Bearer ${API_KEY}`
       }
     });
 
     students = await r1.json();
 
 
-    // Scores
+    // Ambil score
     const r2 = await fetch(`${API_URL}/rest/v1/scores?select=student_id,sifir,markah,teacher_id`,{
       headers:{
-        "apikey":API_KEY,
-        "Authorization":`Bearer ${API_KEY}`
+        apikey:API_KEY,
+        Authorization:`Bearer ${API_KEY}`
       }
     });
 
@@ -120,12 +137,13 @@ async function loadData(){
 
 
     const select = document.getElementById("kelasSelect");
-    select.innerHTML = '<option value="">Semua Kelas</option>';
+
+    select.innerHTML='<option value="">Semua Kelas</option>';
 
     kelasSet.forEach(k=>{
-      const o = document.createElement("option");
-      o.value = k;
-      o.textContent = k;
+      const o=document.createElement("option");
+      o.value=k;
+      o.textContent=k;
       select.appendChild(o);
     });
 
@@ -158,6 +176,7 @@ function updateRanking(){
       let sah = 0;
 
 
+      // Kira sifir sah (3 guru)
       for(let i=2;i<=12;i++){
 
         const rekod = scores.filter(
@@ -185,6 +204,7 @@ function updateRanking(){
   });
 
 
+  // Susun ikut sah
   list.sort((a,b)=>b.sah-a.sah);
 
 
@@ -201,7 +221,7 @@ function updateRanking(){
 
     html += `
       <div class="rank ${cls}">
-        ${i+1}. ${r.nama} (${r.kelas}) - ${r.sah} Sah
+        ${i+1}. ${r.nama} (${r.kelas}) - ${r.sah} Sifir Sah
       </div>
     `;
 
@@ -214,14 +234,6 @@ function updateRanking(){
 
 }
 
-
-// ================= LOGOUT =================
-function logout(){
-
-  localStorage.clear();
-  location.href="login.html";
-
-}
 
 
 // ================= START =================
