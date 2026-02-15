@@ -4,73 +4,52 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Ranking - Super Sifir Digital STEM1</title>
+<title>Ranking Murid - Super Sifir</title>
 
 <style>
 body{
   font-family: Arial, sans-serif;
-  background:#f5f7fb;
-  padding:20px;
-}
-
-.container{
   max-width:700px;
   margin:auto;
-  background:white;
   padding:20px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  background:#f5f7fb;
 }
 
 h1{
   text-align:center;
-  margin-bottom:5px;
+  color:#1e40af;
 }
 
-h3{
-  text-align:center;
-  margin-top:0;
-  color:#444;
-}
-
-select,button{
-  width:100%;
+select{
   padding:10px;
-  margin:8px 0;
-  border-radius:6px;
+  width:100%;
+  margin:10px 0;
+  border-radius:8px;
   border:1px solid #ddd;
-}
-
-button{
-  background:#2563eb;
-  color:white;
-  border:none;
-  font-weight:bold;
 }
 
 .card{
-  background:#fafafa;
   border:1px solid #ddd;
+  border-radius:10px;
   padding:15px;
-  border-radius:8px;
   margin-top:15px;
+  background:white;
 }
 
 .rank{
-  font-size:17px;
+  font-size:16px;
   margin:6px 0;
+  font-weight:bold;
 }
 
-.gold{color:gold;font-weight:bold;}
-.silver{color:silver;font-weight:bold;}
-.bronze{color:#cd7f32;font-weight:bold;}
+.gold{color:gold;}
+.silver{color:silver;}
+.bronze{color:#cd7f32;}
 </style>
 </head>
 
 
 <body>
-
-<div class="container">
 
 <h1>Super Sifir Digital STEM1</h1>
 <h3>🏆 Ranking Murid (Lulus Sah)</h3>
@@ -89,174 +68,87 @@ button{
 🏠 Menu Utama
 </button>
 
-</div>
-
 
 <script>
 
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
 const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
 
+
 let students = [];
 let scores = [];
 
 
-// ================= LOAD =================
+// ================= LOAD DATA =================
 async function loadData(){
 
-  try{
+  const res1 = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
+    headers:{
+      apikey:API_KEY,
+      Authorization:`Bearer ${API_KEY}`
+    }
+  });
 
-    // Ambil murid
-    const r1 = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
-      headers:{
-        apikey:API_KEY,
-        Authorization:`Bearer ${API_KEY}`
-      }
-    });
-
-    students = await r1.json();
+  students = await res1.json();
 
 
-    // Ambil score
-    const r2 = await fetch(`${API_URL}/rest/v1/scores?select=student_id,sifir,markah,teacher_id`,{
-      headers:{
-        apikey:API_KEY,
-        Authorization:`Bearer ${API_KEY}`
-      }
-    });
+  const res2 = await fetch(`${API_URL}/rest/v1/scores?select=student_id,sifir,markah,teacher_id`,{
+    headers:{
+      apikey:API_KEY,
+      Authorization:`Bearer ${API_KEY}`
+    }
+  });
 
-    scores = await r2.json();
-
-
-    // Isi dropdown kelas
-    const kelasSet = new Set();
-
-    students.forEach(s=>{
-      if(s.kelas) kelasSet.add(s.kelas);
-    });
+  scores = await res2.json();
 
 
-    const select = document.getElementById("kelasSelect");
+  // Isi kelas
+  const kelasSet = new Set();
 
-    select.innerHTML='<option value="">Semua Kelas</option>';
-
-    kelasSet.forEach(k=>{
-      const o=document.createElement("option");
-      o.value=k;
-      o.textContent=k;
-      select.appendChild(o);
-    });
+  students.forEach(s=>{
+    if(s.kelas) kelasSet.add(s.kelas);
+  });
 
 
-    updateRanking();
+  const select=document.getElementById("kelasSelect");
+
+  select.innerHTML='<option value="">Semua Kelas</option>';
+
+  kelasSet.forEach(k=>{
+    const o=document.createElement("option");
+    o.value=k;
+    o.textContent=k;
+    select.appendChild(o);
+  });
 
 
-  }catch(e){
-
-    alert("Gagal load ranking");
-    console.log(e);
-
-  }
+  updateRanking();
 
 }
 
 
-// ================= UPDATE =================
+// ================= KIRA RANKING =================
 function updateRanking(){
 
   const kelas = document.getElementById("kelasSelect").value;
 
-  let list = [];
+  let result=[];
 
 
   students.forEach(s=>{
 
     if(kelas==="" || s.kelas===kelas){
 
-      let sah = 0;
+      let lulusCount=0;
 
+
+      // Kira sifir yang dah sah lulus
       for(let i=2;i<=12;i++){
 
-        let pass = 0;
-
-for(let i=2;i<=12;i++){
-
-  const count = scores.filter(
-    r => r.student_id===s.id && r.sifir==i && r.markah==1
-  ).length;
-
-  if(count >= 4){
-    pass++;
-  }
-
-}
-;
-
-        const pass = rekod.filter(r=>r.markah==1);
-        const guru = new Set(pass.map(r=>r.teacher_id));
-
-        if(pass.length>=3 && guru.size>=3){
-          sah++;
-        }
-
-      }
+        const guruSet = new Set();
 
 
-      list.push({
-        nama:s.nama,
-        kelas:s.kelas,
-        sah
-      });
+        scores.forEach(r=>{
 
-    }
-
-  });
-
-
-  // Susun ikut sah
-  list.sort((a,b)=>b.sah-a.sah);
-
-
-  let html = '<div class="card">';
-
-
-  list.forEach((r,i)=>{
-
-    let cls="";
-    if(i==0) cls="gold";
-    else if(i==1) cls="silver";
-    else if(i==2) cls="bronze";
-
-
-    html += `
-      <div class="rank ${cls}">
-        ${i+1}. ${r.nama} (${r.kelas}) - ${r.sah} Sifir Sah
-      </div>
-    `;
-
-  });
-
-
-  html += '</div>';
-
-  document.getElementById("ranking").innerHTML = html;
-
-}
-
-
-
-// ================= START =================
-document.addEventListener("DOMContentLoaded",()=>{
-
-  loadData();
-
-  document.getElementById("kelasSelect")
-    .addEventListener("change",updateRanking);
-
-});
-
-</script>
-
-</body>
-</html>
-
+          if(
+            r.student_id===s.id &&
