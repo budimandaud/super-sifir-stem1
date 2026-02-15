@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Ranking Murid - Super Sifir</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  max-width:700px;
+  margin:auto;
+  padding:20px;
+}
+
+select{
+  padding:8px;
+  width:100%;
+  margin:10px 0;
+}
+
+.card{
+  border:1px solid #ddd;
+  border-radius:6px;
+  padding:15px;
+  margin-top:15px;
+}
+
+.rank{
+  font-size:18px;
+  margin:5px 0;
+}
+
+.gold{color:gold;font-weight:bold;}
+.silver{color:silver;font-weight:bold;}
+.bronze{color:#cd7f32;font-weight:bold;}
+</style>
+</head>
+
+<body>
+
+<h2>🏆 Ranking Murid</h2>
+
+<label>Pilih Kelas</label>
+<select id="kelasSelect">
+  <option value="">Semua Kelas</option>
+</select>
+
+<div id="ranking"></div>
+
+<script>
+
+const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
+const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
+
+let students = [];
+let scores = [];
+
+
+// Load semua data
+async function loadData(){
+
+  // Ambil murid
+  const res1 = await fetch(`${API_URL}/rest/v1/students?select=*`,{
+    headers:{
+      apikey:API_KEY,
+      Authorization:`Bearer ${API_KEY}`
+    }
+  });
+
+  students = await res1.json();
+
+
+  // Ambil scores
+  const res2 = await fetch(`${API_URL}/rest/v1/scores?select=*`,{
+    headers:{
+      apikey:API_KEY,
+      Authorization:`Bearer ${API_KEY}`
+    }
+  });
+
+  scores = await res2.json();
+
+
+  // Isi kelas
+  const kelasSet = new Set();
+  students.forEach(s=>kelasSet.add(s.kelas));
+
+  const select=document.getElementById("kelasSelect");
+  select.innerHTML='<option value="">Semua Kelas</option>';
+
+  kelasSet.forEach(k=>{
+    const o=document.createElement("option");
+    o.value=k;
+    o.textContent=k;
+    select.appendChild(o);
+  });
+
+
+  updateRanking();
+
+}
+
+
+// Kira ranking
+function updateRanking(){
+
+  const kelas = document.getElementById("kelasSelect").value;
+
+  let result=[];
+
+
+  students.forEach(s=>{
+
+    if(kelas==="" || s.kelas===kelas){
+
+      const pass = scores.filter(r=>r.student_id===s.id && r.markah==1).length;
+
+      result.push({
+        nama:s.nama,
+        kelas:s.kelas,
+        pass
+      });
+
+    }
+
+  });
+
+
+  // Susun ikut pass
+  result.sort((a,b)=>b.pass-a.pass);
+
+
+  let html='<div class="card">';
+
+
+  result.forEach((r,i)=>{
+
+    let cls="";
+
+    if(i==0) cls="gold";
+    else if(i==1) cls="silver";
+    else if(i==2) cls="bronze";
+
+
+    html+=`
+      <div class="rank ${cls}">
+        ${i+1}. ${r.nama} (${r.kelas}) - ${r.pass} ✔️
+      </div>
+    `;
+
+  });
+
+
+  html+='</div>';
+
+  document.getElementById("ranking").innerHTML=html;
+
+}
+
+
+
+// Start
+loadData();
+
+document.getElementById("kelasSelect").addEventListener("change",updateRanking);
+
+</script>
+
+</body>
+</html>

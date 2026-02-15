@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Semak Rekod Murid - Super Sifir</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  max-width:700px;
+  margin:auto;
+  padding:20px;
+}
+
+select, button{
+  padding:10px;
+  width:100%;
+  margin:8px 0;
+}
+
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#1d4ed8;
+}
+
+.card{
+  border:1px solid #ddd;
+  border-radius:6px;
+  padding:15px;
+  margin-top:15px;
+}
+
+.pass{color:green;font-weight:bold;}
+.fail{color:red;font-weight:bold;}
+</style>
+</head>
+
+<body>
+
+<h2>📊 Semak Rekod Murid</h2>
+
+<label>Pilih Kelas</label>
+<select id="kelasSelect">
+  <option value="">Pilih Kelas</option>
+</select>
+
+<label>Pilih Murid</label>
+<select id="muridSelect">
+  <option value="">Pilih Murid</option>
+</select>
+
+<button onclick="semak()">Semak Rekod</button>
+
+<div id="result"></div>
+
+<script>
+
+const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
+const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
+
+
+let allStudents = [];
+
+
+// Load semua murid
+async function loadMurid(){
+
+  const res = await fetch(`${API_URL}/rest/v1/students?select=*`,{
+    headers:{
+      apikey:API_KEY,
+      Authorization:`Bearer ${API_KEY}`
+    }
+  });
+
+  allStudents = await res.json();
+
+  // Isi kelas
+  const kelasSet = new Set();
+  allStudents.forEach(s=>kelasSet.add(s.kelas));
+
+  const kelasSelect = document.getElementById("kelasSelect");
+  kelasSelect.innerHTML='<option value="">Pilih Kelas</option>';
+
+  kelasSet.forEach(k=>{
+    const o=document.createElement("option");
+    o.value=k;
+    o.textContent=k;
+    kelasSelect.appendChild(o);
+  });
+
+}
+
+
+// Update murid ikut kelas
+function updateMurid(){
+
+  const kelas = document.getElementById("kelasSelect").value;
+  const muridSelect = document.getElementById("muridSelect");
+
+  muridSelect.innerHTML='<option value="">Pilih Murid</option>';
+
+  allStudents.forEach(s=>{
+
+    if(kelas && s.kelas===kelas){
+
+      const o=document.createElement("option");
+      o.value=s.id;
+      o.textContent=s.nama;
+      muridSelect.appendChild(o);
+
+    }
+
+  });
+
+}
+
+
+// Semak rekod
+async function semak(){
+
+  const student_id = document.getElementById("muridSelect").value;
+
+  if(!student_id){
+    alert("Sila pilih murid");
+    return;
+  }
+
+  const s = allStudents.find(x=>x.id===student_id);
+
+  const res = await fetch(
+    `${API_URL}/rest/v1/scores?student_id=eq.${student_id}&select=*`,
+    {
+      headers:{
+        apikey:API_KEY,
+        Authorization:`Bearer ${API_KEY}`
+      }
+    }
+  );
+
+  const scores = await res.json();
+
+
+  // Simpan rekod ikut sifir
+  const record = {};
+
+  scores.forEach(r=>{
+    record[r.sifir] = r.markah;
+  });
+
+
+  let html = `
+  <div class="card">
+    <h3>${s.nama} (${s.kelas})</h3>
+  `;
+
+
+  // Loop sifir 2-12
+  for(let i=2;i<=12;i++){
+
+    if(record[i] !== undefined){
+
+      if(record[i]==1){
+
+        html += `
+          <p>Sifir ${i} :
+          <span class="pass">✔️ Lulus</span></p>
+        `;
+
+      }else{
+
+        html += `
+          <p>Sifir ${i} :
+          <span class="fail">❌ Gagal</span></p>
+        `;
+
+      }
+
+    }else{
+
+      html += `
+        <p>Sifir ${i} :
+        <span style="color:gray">⚠️ Belum Cuba</span></p>
+      `;
+
+    }
+
+  }
+
+
+  html += "</div>";
+
+  document.getElementById("result").innerHTML = html;
+
+}
+
+
+
+// Start
+loadMurid();
+
+document.getElementById("kelasSelect").addEventListener("change",updateMurid);
+
+</script>
+
+</body>
+</html>
