@@ -1,84 +1,151 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Panel Ujian Guru</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#f5f7fb;
+  padding:20px;
+}
+
+.container{
+  max-width:600px;
+  margin:auto;
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+select,button{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:6px;
+  border:1px solid #ddd;
+}
+
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  font-weight:bold;
+}
+
+#msg{
+  margin-top:10px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+<h2>Panel Ujian Sifir</h2>
+
+<label>Kelas</label>
+<select id="kelasSelect">
+  <option value="">Semua</option>
+</select>
+
+<label>Murid</label>
+<select id="muridSelect">
+  <option value="">Pilih Murid</option>
+</select>
+
+<label>Sifir</label>
+<select id="sifir">
+  <option value="">Pilih</option>
+  <option>2</option><option>3</option><option>4</option>
+  <option>5</option><option>6</option><option>7</option>
+  <option>8</option><option>9</option><option>10</option>
+  <option>11</option><option>12</option>
+</select>
+
+<label>Status</label>
+<select id="status">
+  <option value="">Pilih</option>
+  <option value="Lulus">✔️ Lulus</option>
+  <option value="Gagal">❌ Gagal</option>
+</select>
+
+<button onclick="simpan()">Simpan</button>
+
+<p id="msg"></p>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+
 <script>
 
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
-const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
+const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24i";
 
-
-// 🔒 Protect page
-if(localStorage.getItem("login") !== "true"){
-  window.location.href = "login.html";
+// Protect
+if(localStorage.getItem("login")!=="true"){
+  location.href="login.html";
 }
 
+let allStudents=[];
 
-let allStudents = [];
 
-
-// ================= LOAD MURID =================
+// Load murid
 async function loadMurid(){
 
-  try{
-
-    const res = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
-      headers:{
-        "apikey": API_KEY,
-        "Authorization": `Bearer ${API_KEY}`
-      }
-    });
-
-    if(!res.ok){
-      throw new Error("Fetch gagal");
+  const res = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
+    headers:{
+      apikey:API_KEY,
+      Authorization:`Bearer ${API_KEY}`
     }
+  });
 
-    allStudents = await res.json();
+  allStudents = await res.json();
 
-    const kelasSet = new Set();
 
-    allStudents.forEach(s=>{
-      if(s.kelas) kelasSet.add(s.kelas);
-    });
+  const kelasSet=new Set();
+  allStudents.forEach(s=>kelasSet.add(s.kelas));
 
-    const kelasSelect = document.getElementById("kelasSelect");
-    kelasSelect.innerHTML = '<option value="">Semua</option>';
 
-    kelasSet.forEach(k=>{
-      const o = document.createElement("option");
-      o.value = k;
-      o.textContent = k;
-      kelasSelect.appendChild(o);
-    });
+  const kelas=document.getElementById("kelasSelect");
+  kelas.innerHTML='<option value="">Semua</option>';
 
-    updateMurid();
+  kelasSet.forEach(k=>{
+    const o=document.createElement("option");
+    o.value=k;
+    o.textContent=k;
+    kelas.appendChild(o);
+  });
 
-  }catch(err){
-
-    console.error("LOAD ERROR:", err);
-    alert("Gagal load data murid");
-
-  }
-
+  updateMurid();
 }
 
 
-// ================= UPDATE MURID =================
+// Update murid
 function updateMurid(){
 
-  const kelasSelect = document.getElementById("kelasSelect");
-  const muridSelect = document.getElementById("muridSelect");
+  const kelas=document.getElementById("kelasSelect").value;
+  const murid=document.getElementById("muridSelect");
 
-  if(!kelasSelect || !muridSelect) return;
-
-  const kelas = kelasSelect.value;
-
-  muridSelect.innerHTML = '<option value="">Pilih Murid</option>';
+  murid.innerHTML='<option value="">Pilih Murid</option>';
 
   allStudents.forEach(s=>{
 
-    if(kelas === "" || s.kelas === kelas){
+    if(kelas===""||s.kelas===kelas){
 
-      const o = document.createElement("option");
-      o.value = s.id;
-      o.textContent = `${s.nama} (${s.kelas})`;
-      muridSelect.appendChild(o);
+      const o=document.createElement("option");
+      o.value=s.id;
+      o.textContent=`${s.nama} (${s.kelas})`;
+      murid.appendChild(o);
 
     }
 
@@ -87,20 +154,80 @@ function updateMurid(){
 }
 
 
-// ================= SIMPAN =================
+// Simpan
 async function simpan(){
 
-  const student_id = document.getElementById("muridSelect").value;
-  const sifir = document.getElementById("sifir").value;
-  const status = document.getElementById("status").value;
-  const teacher_id = localStorage.getItem("teacher_id");
+  const student_id=document.getElementById("muridSelect").value;
+  const sifir=document.getElementById("sifir").value;
+  const status=document.getElementById("status").value;
+  const teacher_id=localStorage.getItem("teacher_id");
 
-  if(!student_id || !sifir || !status || !teacher_id){
 
-    document.getElementById("msg").innerText="❗ Lengkapkan semua data";
-    document.getElementById("msg").style.color="red";
+  if(!student_id||!sifir||!status||!teacher_id){
+
+    msg("❗ Lengkapkan semua");
     return;
 
   }
 
-  const res = awai
+
+  const res=await fetch(`${API_URL}/rest/v1/scores`,{
+
+    method:"POST",
+
+    headers:{
+      "Content-Type":"application/json",
+      apikey:API_KEY,
+      Authorization:`Bearer ${API_KEY}`
+    },
+
+    body:JSON.stringify({
+      student_id,
+      sifir,
+      markah: status==="Lulus"?1:0,
+      teacher_id
+    })
+
+  });
+
+
+  if(res.ok){
+    msg("✅ Berjaya simpan",true);
+  }else{
+    msg("❌ Gagal simpan");
+  }
+
+}
+
+
+function msg(t,ok=false){
+
+  const m=document.getElementById("msg");
+  m.innerText=t;
+  m.style.color= ok?"green":"red";
+
+}
+
+
+// Logout
+function logout(){
+
+  localStorage.clear();
+  location.href="login.html";
+
+}
+
+
+// Start
+document.addEventListener("DOMContentLoaded",function(){
+
+  loadMurid();
+  document.getElementById("kelasSelect")
+    .addEventListener("change",updateMurid);
+
+});
+
+</script>
+
+</body>
+</html>
