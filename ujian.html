@@ -4,42 +4,88 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Panel Ujian Guru</title>
+<title>Panel Ujian - Super Sifir Digital STEM1</title>
 
 <style>
 body{
-  font-family: Arial, sans-serif;
-  background:#f5f7fb;
-  padding:20px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  min-height:100vh;
+  margin:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.container{
-  max-width:600px;
-  margin:auto;
+.card{
   background:white;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  width:100%;
+  max-width:450px;
+  padding:25px 22px;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
+
+h1{
+  text-align:center;
+  margin-bottom:5px;
+  color:#1e40af;
+}
+
+h3{
+  text-align:center;
+  margin-top:0;
+  color:#555;
+  font-weight:normal;
 }
 
 select,button{
   width:100%;
-  padding:10px;
+  padding:12px;
   margin:8px 0;
-  border-radius:6px;
+  border-radius:8px;
   border:1px solid #ddd;
+  font-size:15px;
 }
 
 button{
-  background:#2563eb;
-  color:white;
   border:none;
   font-weight:bold;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.btn-save{
+  background:#2563eb;
+  color:white;
+}
+
+.btn-save:hover{
+  background:#1d4ed8;
+}
+
+.btn-logout{
+  background:#ef4444;
+  color:white;
+}
+
+.btn-logout:hover{
+  background:#dc2626;
+}
+
+.btn-home{
+  background:#10b981;
+  color:white;
+}
+
+.btn-home:hover{
+  background:#059669;
 }
 
 #msg{
-  margin-top:10px;
+  text-align:center;
   font-weight:bold;
+  margin:8px 0;
 }
 </style>
 </head>
@@ -47,9 +93,11 @@ button{
 
 <body>
 
-<div class="container">
+<div class="card">
 
-<h2>Panel Ujian Sifir</h2>
+<h1>Super Sifir Digital STEM1</h1>
+<h3>📝 Panel Ujian Guru</h3>
+
 
 <label>Kelas</label>
 <select id="kelasSelect">
@@ -77,11 +125,21 @@ button{
   <option value="Gagal">❌ Gagal</option>
 </select>
 
-<button onclick="simpan()">Simpan</button>
+
+<button class="btn-save" onclick="simpan()">
+💾 Simpan Rekod
+</button>
 
 <p id="msg"></p>
 
-<button onclick="logout()">Logout</button>
+
+<button class="btn-logout" onclick="logout()">
+🚪 Logout
+</button>
+
+<button class="btn-home" onclick="location.href='index.html'">
+🏠 Menu Utama
+</button>
 
 </div>
 
@@ -91,15 +149,17 @@ button{
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
 const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
 
+
 // Protect
 if(localStorage.getItem("login")!=="true"){
   location.href="login.html";
 }
 
+
 let allStudents=[];
 
 
-// Load murid
+// ================= LOAD =================
 async function loadMurid(){
 
   const res = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
@@ -165,7 +225,7 @@ async function simpan(){
 
   if(!student_id||!sifir||!status||!teacher_id){
 
-    msg("❗ Lengkapkan semua");
+    showMsg("❗ Lengkapkan semua pilihan",false);
     return;
 
   }
@@ -192,18 +252,18 @@ async function simpan(){
 
 
   if(res.ok){
-    msg("✅ Berjaya simpan",true);
+    showMsg("✅ Rekod disimpan",true);
   }else{
-    msg("❌ Gagal simpan");
+    showMsg("❌ Gagal simpan",false);
   }
 
 }
 
 
-function msg(t,ok=false){
+function showMsg(text,ok){
 
   const m=document.getElementById("msg");
-  m.innerText=t;
+  m.innerText=text;
   m.style.color= ok?"green":"red";
 
 }
@@ -222,6 +282,7 @@ function logout(){
 document.addEventListener("DOMContentLoaded",function(){
 
   loadMurid();
+
   document.getElementById("kelasSelect")
     .addEventListener("change",updateMurid);
 
