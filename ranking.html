@@ -129,7 +129,6 @@ async function loadData(){
 
 }
 
-
 // ================= KIRA RANKING =================
 function updateRanking(){
 
@@ -142,7 +141,79 @@ function updateRanking(){
 
     if(kelas==="" || s.kelas===kelas){
 
-      let sahCount=0;
+      let sahCount = 0;
 
-      // Kira ikut sifir
-      for(let i=2;i<=12
+      // Kira ikut sifir 2–12
+      for(let i=2;i<=12;i++){
+
+        const rekod = scores.filter(
+          r => r.student_id === s.id && r.sifir == i
+        );
+
+        const pass = rekod.filter(r=>r.markah==1);
+        const guru = new Set(pass.map(r=>r.teacher_id));
+
+        if(pass.length >= 3 && guru.size >= 3){
+          sahCount++;
+        }
+
+      }
+
+      result.push({
+        nama: s.nama,
+        kelas: s.kelas,
+        sah: sahCount
+      });
+
+    }
+
+  });
+
+
+  // Susun ikut sifir sah
+  result.sort((a,b)=>b.sah-a.sah);
+
+
+  let html = '<div class="card">';
+
+
+  result.forEach((r,i)=>{
+
+    let cls="";
+    if(i===0) cls="gold";
+    else if(i===1) cls="silver";
+    else if(i===2) cls="bronze";
+
+
+    html += `
+      <div class="rank ${cls}">
+        ${i+1}. ${r.nama} (${r.kelas}) - ${r.sah} Sifir Sah
+      </div>
+    `;
+
+  });
+
+
+  html += '</div>';
+
+  document.getElementById("ranking").innerHTML = html;
+
+}
+
+
+// ================= LOGOUT =================
+function logout(){
+  localStorage.clear();
+  window.location.href="login.html";
+}
+
+
+// ================= START =================
+document.addEventListener("DOMContentLoaded", function(){
+
+  loadData();
+
+  document.getElementById("kelasSelect")
+    .addEventListener("change", updateRanking);
+
+});
