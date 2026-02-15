@@ -4,109 +4,69 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Login Guru</title>
+<title>Super Sifir Digital STEM1</title>
 
 <style>
 body{
   font-family: Arial, sans-serif;
   background:#f5f7fb;
-  padding:40px;
+  margin:0;
+  padding:30px;
 }
 
 .container{
-  max-width:400px;
+  max-width:500px;
   margin:auto;
   background:white;
-  padding:25px;
+  padding:30px;
   border-radius:12px;
   box-shadow:0 4px 10px rgba(0,0,0,0.05);
   text-align:center;
 }
 
-input,button{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-  border-radius:8px;
-  border:1px solid #ddd;
+h1{
+  margin-bottom:30px;
 }
 
 button{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
   background:#2563eb;
   color:white;
-  border:none;
-  font-weight:bold;
 }
 
-#error{
-  color:red;
-  margin-top:10px;
+button:hover{
+  background:#1d4ed8;
 }
 </style>
+
 </head>
 
 <body>
 
 <div class="container">
 
-<h2>Login Guru</h2>
+  <h1>Super Sifir Digital STEM1</h1>
 
-<input type="text" id="username" placeholder="Username">
-<input type="password" id="password" placeholder="Password">
+  <button onclick="location.href='login.html'">
+    🔐 Login Guru
+  </button>
 
-<button onclick="login()">Login</button>
+  <button onclick="location.href='rekod.html'">
+    📊 Semak Rekod Murid
+  </button>
 
-<p id="error"></p>
+  <button onclick="location.href='ranking.html'">
+    🏆 Ranking Murid
+  </button>
 
 </div>
-
-
-<script>
-
-const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
-const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
-
-
-async function login(){
-
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if(!username || !password){
-    document.getElementById("error").innerText="Isi semua ruangan";
-    return;
-  }
-
-  const res = await fetch(
-    `${API_URL}/rest/v1/teachers?username=eq.${username}&password=eq.${password}&select=*`,
-    {
-      headers:{
-        apikey:API_KEY,
-        Authorization:`Bearer ${API_KEY}`
-      }
-    }
-  );
-
-  const data = await res.json();
-
-  if(data.length===1){
-
-    // Simpan session
-    localStorage.setItem("login","true");
-    localStorage.setItem("teacher_id", data[0].id);
-    localStorage.setItem("teacher_name", data[0].nama);
-
-    window.location.href="ujian.html";
-
-  }else{
-
-    document.getElementById("error").innerText="❌ Login gagal";
-
-  }
-
-}
-
-</script>
 
 </body>
 </html>

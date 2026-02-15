@@ -3,10 +3,17 @@
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
 const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
 
+
+// 🔒 Protect page
+if(localStorage.getItem("login") !== "true"){
+  window.location.href = "login.html";
+}
+
+
 let allStudents = [];
 
 
-// Load murid
+// ================= LOAD MURID =================
 async function loadMurid(){
 
   try{
@@ -24,17 +31,14 @@ async function loadMurid(){
 
     allStudents = await res.json();
 
-
     const kelasSet = new Set();
 
     allStudents.forEach(s=>{
       if(s.kelas) kelasSet.add(s.kelas);
     });
 
-
     const kelasSelect = document.getElementById("kelasSelect");
     kelasSelect.innerHTML = '<option value="">Semua</option>';
-
 
     kelasSet.forEach(k=>{
       const o = document.createElement("option");
@@ -42,7 +46,6 @@ async function loadMurid(){
       o.textContent = k;
       kelasSelect.appendChild(o);
     });
-
 
     updateMurid();
 
@@ -56,14 +59,17 @@ async function loadMurid(){
 }
 
 
-// Update murid ikut kelas
+// ================= UPDATE MURID =================
 function updateMurid(){
 
-  const kelas = document.getElementById("kelasSelect").value;
+  const kelasSelect = document.getElementById("kelasSelect");
   const muridSelect = document.getElementById("muridSelect");
 
-  muridSelect.innerHTML = '<option value="">Pilih Murid</option>';
+  if(!kelasSelect || !muridSelect) return;
 
+  const kelas = kelasSelect.value;
+
+  muridSelect.innerHTML = '<option value="">Pilih Murid</option>';
 
   allStudents.forEach(s=>{
 
@@ -81,14 +87,13 @@ function updateMurid(){
 }
 
 
-// Simpan keputusan
+// ================= SIMPAN =================
 async function simpan(){
 
   const student_id = document.getElementById("muridSelect").value;
   const sifir = document.getElementById("sifir").value;
   const status = document.getElementById("status").value;
   const teacher_id = localStorage.getItem("teacher_id");
-
 
   if(!student_id || !sifir || !status || !teacher_id){
 
@@ -98,54 +103,4 @@ async function simpan(){
 
   }
 
-
-  const res = await fetch(`${API_URL}/rest/v1/scores`,{
-
-    method:"POST",
-
-    headers:{
-      "Content-Type":"application/json",
-      apikey:API_KEY,
-      Authorization:`Bearer ${API_KEY}`
-    },
-
-    body:JSON.stringify({
-      student_id,
-      sifir,
-      markah: status === "Lulus" ? 1 : 0,
-      teacher_id
-    })
-
-  });
-
-
-  if(res.ok){
-
-    document.getElementById("msg").innerText="✅ Rekod disimpan!";
-    document.getElementById("msg").style.color="green";
-
-  }else{
-
-    document.getElementById("msg").innerText="❌ Gagal simpan";
-    document.getElementById("msg").style.color="red";
-
-  }
-
-}
-
-
-// Logout
-function logout(){
-
-  localStorage.clear();
-  window.location.href="login.html";
-
-}
-
-
-// Start
-loadMurid();
-
-document.getElementById("kelasSelect").addEventListener("change", updateMurid);
-
-</script>
+  const res = awai

@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="UTF-8">
-<title>Login Guru - Super Sifir STEM1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login Guru</title>
 
 <style>
 body{
   font-family: Arial, sans-serif;
-  text-align:center;
-  padding:50px;
+  background:#f5f7fb;
+  padding:40px;
 }
 
-input{
-  display:block;
-  margin:15px auto;
+.container{
+  max-width:400px;
+  margin:auto;
+  background:white;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  text-align:center;
+}
+
+input,button{
+  width:100%;
   padding:10px;
-  width:250px;
+  margin:8px 0;
+  border-radius:8px;
+  border:1px solid #ddd;
 }
 
 button{
-  padding:10px 20px;
   background:#2563eb;
   color:white;
   border:none;
-  cursor:pointer;
-}
-
-button:hover{
-  background:#1d4ed8;
+  font-weight:bold;
 }
 
 #error{
@@ -40,6 +47,8 @@ button:hover{
 
 <body>
 
+<div class="container">
+
 <h2>Login Guru</h2>
 
 <input type="text" id="username" placeholder="Username">
@@ -49,38 +58,56 @@ button:hover{
 
 <p id="error"></p>
 
+</div>
+
+
 <script>
+
+const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
+const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
+
 
 async function login(){
 
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  const res = await fetch(
-    `${API_URL}/rest/v1/teachers?select=*&username=eq.${username}&password=eq.${password}`,
-    {
-      headers:{
-        apikey:API_KEY,
-        Authorization:`Bearer ${API_KEY}`
-      }
+  if(!username || !password){
+    document.getElementById("error").innerText="Sila isi semua ruangan";
+    return;
+  }
+
+
+  // Encode untuk elak error di web hosting
+  const u = encodeURIComponent(username);
+  const p = encodeURIComponent(password);
+
+
+  const url = `${API_URL}/rest/v1/teachers?select=*&username=eq.${u}&password=eq.${p}`;
+
+
+  const res = await fetch(url,{
+    headers:{
+      "apikey": API_KEY,
+      "Authorization": `Bearer ${API_KEY}`
     }
-  );
+  });
+
 
   const data = await res.json();
 
-  console.log("LOGIN RESULT:", data);
 
-  if(data.length>0){
+  if(data.length > 0){
 
     localStorage.setItem("login","true");
     localStorage.setItem("teacher_id", data[0].id);
     localStorage.setItem("teacher_name", data[0].nama);
 
-    window.location.href="ujian.html";
+    window.location.href = "ujian.html";
 
   }else{
 
-    document.getElementById("error").innerText="❌ Login gagal";
+    document.getElementById("error").innerText="❌ Username atau password salah";
 
   }
 
