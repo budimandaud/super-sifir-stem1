@@ -184,10 +184,22 @@ async function semak(){
 
   const record = {};
 
-  scores.forEach(r=>{
-    record[r.sifir] = r.markah;
-  });
+  // Kira jumlah lulus ikut sifir
+const record = {};
 
+scores.forEach(r=>{
+
+  if(r.markah == 1){
+
+    if(!record[r.sifir]){
+      record[r.sifir] = 0;
+    }
+
+    record[r.sifir]++;
+
+  }
+
+});
 
   let html = `
     <div class="card">
@@ -197,25 +209,36 @@ async function semak(){
 
   for(let i=2;i<=12;i++){
 
-    if(record[i] !== undefined){
+  if(record[i] !== undefined){
 
-      if(record[i]==1){
+    const count = record[i];
 
-        html += `<p>Sifir ${i}: <span class="pass">✔️ Lulus</span></p>`;
+    if(count >= 4){
 
-      }else{
-
-        html += `<p>Sifir ${i}: <span class="fail">❌ Gagal</span></p>`;
-
-      }
+      html += `
+        <p>Sifir ${i} :
+        <span class="pass">🎉 LULUS</span></p>
+      `;
 
     }else{
 
-      html += `<p>Sifir ${i}: <span class="wait">⚠️ Belum Cuba</span></p>`;
+      html += `
+        <p>Sifir ${i} :
+        <span class="fail">${"✔️".repeat(count)}</span></p>
+      `;
 
     }
 
+  }else{
+
+    html += `
+      <p>Sifir ${i} :
+      <span style="color:gray">⚠️ Belum Cuba</span></p>
+    `;
+
   }
+
+}
 
 
   html += "</div>";
@@ -240,3 +263,4 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 </body>
 </html>
+
