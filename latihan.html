@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Latihan Hafal Sifir</title>
 
 <style>
@@ -23,17 +22,12 @@ body{
   text-align:center;
 }
 
-h1{
-  color:#1e40af;
-}
-
 select,input,button{
   width:100%;
   padding:12px;
   margin:8px 0;
   border-radius:8px;
   border:1px solid #ddd;
-  font-size:16px;
 }
 
 button{
@@ -41,11 +35,6 @@ button{
   color:white;
   border:none;
   font-weight:bold;
-  cursor:pointer;
-}
-
-button:hover{
-  background:#1d4ed8;
 }
 
 #question{
@@ -53,155 +42,186 @@ button:hover{
   font-weight:bold;
   margin:15px 0;
 }
-
-#msg{
-  font-weight:bold;
-  margin:8px 0;
-}
-
-.score{
-  margin-top:10px;
-  font-size:14px;
-  color:#555;
-}
 </style>
 </head>
-
 
 <body>
 
 <div class="container">
 
-<h1>Super Sifir Digital STEM1</h1>
-<h3>✏️ Latihan Hafal Sifir</h3>
+<h2>Latihan Hafal Sifir</h2>
 
+<label>Kelas</label>
+<select id="kelasSelect"></select>
+
+<label>Nama</label>
+<select id="muridSelect"></select>
 
 <label>Pilih Sifir</label>
 <select id="sifir">
-  <option value="">Pilih</option>
-  <option>1</option><option>2</option><option>3</option>
-  <option>4</option><option>5</option><option>6</option>
-  <option>7</option><option>8</option><option>9</option>
-  <option>10</option><option>11</option><option>12</option>
+<option value="">Pilih</option>
+<option>1</option><option>2</option><option>3</option>
+<option>4</option><option>5</option><option>6</option>
+<option>7</option><option>8</option><option>9</option>
+<option>10</option><option>11</option><option>12</option>
 </select>
 
-
-<button onclick="mula()">▶️ Mula Latihan</button>
-
+<button onclick="mula()">Mula Latihan</button>
 
 <div id="quiz" style="display:none;">
 
-  <div id="question"></div>
+<div id="question"></div>
+<input type="number" id="jawapan" placeholder="Jawapan">
 
-  <input type="number" id="jawapan" placeholder="Jawapan">
+<button onclick="semak()">Semak</button>
 
-  <button onclick="semak()">Semak</button>
+<p id="msg"></p>
 
-  <p id="msg"></p>
+<p>Skor: <span id="betul">0</span> / <span id="total">0</span></p>
 
-  <div class="score">
-    Skor: <span id="betul">0</span> / <span id="total">0</span>
-  </div>
+<button onclick="tamat()">Tamat & Simpan</button>
 
 </div>
-
 
 <br>
-
-<button onclick="location.href='index.html'">
-🏠 Menu Utama
-</button>
+<button onclick="location.href='index.html'">Menu Utama</button>
 
 </div>
-
 
 <script>
 
-let sifir = 0;
-let betul = 0;
-let total = 0;
-let soalan = 0;
+const API_URL="https://uziefozgozmnckfssoyv.supabase.co";
+const API_KEY="PASTE_API_KEY_SINI";
+
+let students=[];
+let student_id=null;
+let sifir=0;
+let betul=0;
+let total=0;
+let soalan=0;
 
 
-// Mula latihan
+// Load murid
+async function loadMurid(){
+
+const res=await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
+headers:{apikey:API_KEY,Authorization:`Bearer ${API_KEY}`}
+});
+
+students=await res.json();
+
+const kelasSet=new Set();
+students.forEach(s=>kelasSet.add(s.kelas));
+
+const kelas=document.getElementById("kelasSelect");
+kelas.innerHTML="<option value=''>Pilih Kelas</option>";
+
+kelasSet.forEach(k=>{
+let o=document.createElement("option");
+o.value=k;
+o.textContent=k;
+kelas.appendChild(o);
+});
+
+updateMurid();
+}
+
+
+function updateMurid(){
+
+const kelas=document.getElementById("kelasSelect").value;
+const murid=document.getElementById("muridSelect");
+
+murid.innerHTML="<option value=''>Pilih Murid</option>";
+
+students.forEach(s=>{
+if(s.kelas===kelas){
+let o=document.createElement("option");
+o.value=s.id;
+o.textContent=s.nama;
+murid.appendChild(o);
+}
+});
+}
+
+
 function mula(){
 
-  sifir = document.getElementById("sifir").value;
+student_id=document.getElementById("muridSelect").value;
+sifir=document.getElementById("sifir").value;
 
-  if(!sifir){
-    alert("Sila pilih sifir dahulu");
-    return;
-  }
+if(!student_id||!sifir){
+alert("Lengkapkan semua pilihan");
+return;
+}
 
-  betul = 0;
-  total = 0;
+betul=0;
+total=0;
 
-  document.getElementById("betul").innerText = 0;
-  document.getElementById("total").innerText = 0;
+document.getElementById("quiz").style.display="block";
 
-  document.getElementById("quiz").style.display="block";
-
-  nextSoalan();
-
+nextSoalan();
 }
 
 
-// Soalan baru
 function nextSoalan(){
-
-  soalan = Math.floor(Math.random()*12)+1;
-
-  document.getElementById("question")
-    .innerText = `${sifir} × ${soalan} = ?`;
-
-  document.getElementById("jawapan").value="";
-  document.getElementById("jawapan").focus();
-
+soalan=Math.floor(Math.random()*12)+1;
+document.getElementById("question").innerText=`${sifir} × ${soalan} = ?`;
+document.getElementById("jawapan").value="";
 }
 
 
-// Semak jawapan
 function semak(){
 
-  const jawap = document.getElementById("jawapan").value;
+let j=document.getElementById("jawapan").value;
+if(j==="")return;
 
-  if(jawap===""){
-    alert("Isi jawapan");
-    return;
-  }
+total++;
 
-  total++;
-
-  const betulJawap = sifir * soalan;
-
-  if(jawap == betulJawap){
-
-    betul++;
-
-    document.getElementById("msg")
-      .innerText="✅ Betul!";
-
-    document.getElementById("msg")
-      .style.color="green";
-
-  }else{
-
-    document.getElementById("msg")
-      .innerText=`❌ Salah. Jawapan: ${betulJawap}`;
-
-    document.getElementById("msg")
-      .style.color="red";
-
-  }
-
-
-  document.getElementById("betul").innerText = betul;
-  document.getElementById("total").innerText = total;
-
-
-  setTimeout(nextSoalan, 1000);
-
+if(j==sifir*soalan){
+betul++;
+document.getElementById("msg").innerText="Betul!";
+}else{
+document.getElementById("msg").innerText=`Salah. Jawapan ${sifir*soalan}`;
 }
+
+document.getElementById("betul").innerText=betul;
+document.getElementById("total").innerText=total;
+
+setTimeout(nextSoalan,1000);
+}
+
+
+async function tamat(){
+
+if(total==0)return;
+
+await fetch(`${API_URL}/rest/v1/latihan`,{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+apikey:API_KEY,
+Authorization:`Bearer ${API_KEY}`
+},
+body:JSON.stringify({
+student_id,
+sifir,
+betul,
+total
+})
+});
+
+alert("Rekod latihan disimpan!");
+
+location.reload();
+}
+
+
+document.addEventListener("DOMContentLoaded",function(){
+loadMurid();
+document.getElementById("kelasSelect")
+.addEventListener("change",updateMurid);
+});
 
 </script>
 
