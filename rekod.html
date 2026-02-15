@@ -4,40 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Semak Rekod - Super Sifir Digital STEM1</title>
+<title>Semak Rekod Murid - Super Sifir</title>
 
 <style>
 body{
   font-family: Arial, sans-serif;
-  background:#f5f7fb;
-  padding:20px;
-}
-
-.container{
   max-width:700px;
   margin:auto;
-  background:white;
   padding:20px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  background:#f5f7fb;
 }
 
 h1{
   text-align:center;
-  margin-bottom:5px;
+  color:#1e40af;
 }
 
-h3{
-  text-align:center;
-  margin-top:0;
-  color:#444;
-}
-
-select,button{
-  width:100%;
+select, button{
   padding:10px;
+  width:100%;
   margin:8px 0;
-  border-radius:6px;
+  border-radius:8px;
   border:1px solid #ddd;
 }
 
@@ -45,31 +32,39 @@ button{
   background:#2563eb;
   color:white;
   border:none;
+  cursor:pointer;
   font-weight:bold;
 }
 
-.card{
-  background:#fafafa;
-  border:1px solid #ddd;
-  padding:15px;
-  border-radius:8px;
-  margin-top:15px;
+button:hover{
+  background:#1d4ed8;
 }
 
-.pass{color:green;font-weight:bold;}
-.fail{color:red;font-weight:bold;}
-.wait{color:gray;font-weight:bold;}
+.card{
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:15px;
+  margin-top:15px;
+  background:white;
+}
+
+.pass{
+  color:green;
+  font-weight:bold;
+}
+
+.fail{
+  color:#2563eb;
+  font-weight:bold;
+}
 </style>
 </head>
 
 
 <body>
 
-<div class="container">
-
 <h1>Super Sifir Digital STEM1</h1>
 <h3>📊 Semak Rekod Murid</h3>
-
 
 <label>Pilih Kelas</label>
 <select id="kelasSelect">
@@ -91,21 +86,20 @@ button{
 🏠 Menu Utama
 </button>
 
-</div>
-
 
 <script>
 
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
 const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
 
+
 let allStudents = [];
 
 
-// ================= LOAD =================
+// ================= LOAD MURID =================
 async function loadMurid(){
 
-  const res = await fetch(`${API_URL}/rest/v1/students?select=*`,{
+  const res = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
     headers:{
       apikey:API_KEY,
       Authorization:`Bearer ${API_KEY}`
@@ -116,28 +110,33 @@ async function loadMurid(){
 
 
   const kelasSet = new Set();
-  allStudents.forEach(s=>kelasSet.add(s.kelas));
 
-  const kelas = document.getElementById("kelasSelect");
-  kelas.innerHTML='<option value="">Pilih Kelas</option>';
+  allStudents.forEach(s=>{
+    if(s.kelas) kelasSet.add(s.kelas);
+  });
+
+
+  const kelasSelect = document.getElementById("kelasSelect");
+  kelasSelect.innerHTML='<option value="">Pilih Kelas</option>';
 
   kelasSet.forEach(k=>{
     const o=document.createElement("option");
     o.value=k;
     o.textContent=k;
-    kelas.appendChild(o);
+    kelasSelect.appendChild(o);
   });
 
 }
 
 
-// ================= UPDATE =================
+// ================= UPDATE MURID =================
 function updateMurid(){
 
   const kelas = document.getElementById("kelasSelect").value;
-  const murid = document.getElementById("muridSelect");
+  const muridSelect = document.getElementById("muridSelect");
 
-  murid.innerHTML='<option value="">Pilih Murid</option>';
+  muridSelect.innerHTML='<option value="">Pilih Murid</option>';
+
 
   allStudents.forEach(s=>{
 
@@ -146,7 +145,7 @@ function updateMurid(){
       const o=document.createElement("option");
       o.value=s.id;
       o.textContent=s.nama;
-      murid.appendChild(o);
+      muridSelect.appendChild(o);
 
     }
 
@@ -155,7 +154,7 @@ function updateMurid(){
 }
 
 
-// ================= SEMAK =================
+// ================= SEMAK REKOD =================
 async function semak(){
 
   const student_id = document.getElementById("muridSelect").value;
@@ -165,102 +164,8 @@ async function semak(){
     return;
   }
 
-  const s = allStudents.find(x=>x.id===student_id);
+
+  const student = allStudents.find(s=>s.id===student_id);
 
 
-  const res = await fetch(
-    `${API_URL}/rest/v1/scores?student_id=eq.${student_id}&select=*`,
-    {
-      headers:{
-        apikey:API_KEY,
-        Authorization:`Bearer ${API_KEY}`
-      }
-    }
-  );
-
-
-  const scores = await res.json();
-
-
-  const record = {};
-
-  // Kira jumlah lulus ikut sifir
-const record = {};
-
-scores.forEach(r=>{
-
-  if(r.markah == 1){
-
-    if(!record[r.sifir]){
-      record[r.sifir] = 0;
-    }
-
-    record[r.sifir]++;
-
-  }
-
-});
-
-  let html = `
-    <div class="card">
-      <h3>${s.nama} (${s.kelas})</h3>
-  `;
-
-
-  for(let i=2;i<=12;i++){
-
-  if(record[i] !== undefined){
-
-    const count = record[i];
-
-    if(count >= 4){
-
-      html += `
-        <p>Sifir ${i} :
-        <span class="pass">🎉 LULUS</span></p>
-      `;
-
-    }else{
-
-      html += `
-        <p>Sifir ${i} :
-        <span class="fail">${"✔️".repeat(count)}</span></p>
-      `;
-
-    }
-
-  }else{
-
-    html += `
-      <p>Sifir ${i} :
-      <span style="color:gray">⚠️ Belum Cuba</span></p>
-    `;
-
-  }
-
-}
-
-
-  html += "</div>";
-
-  document.getElementById("result").innerHTML = html;
-
-}
-
-
-
-// ================= START =================
-document.addEventListener("DOMContentLoaded",()=>{
-
-  loadMurid();
-
-  document.getElementById("kelasSelect")
-    .addEventListener("change",updateMurid);
-
-});
-
-</script>
-
-</body>
-</html>
-
+  cons
