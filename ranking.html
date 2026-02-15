@@ -30,21 +30,39 @@ select{
 
 .card{
   border:1px solid #ddd;
-  border-radius:10px;
+  border-radius:12px;
   padding:15px;
   margin-top:15px;
   background:white;
 }
 
 .rank{
-  font-size:16px;
-  margin:6px 0;
+  font-size:15px;
+  margin:10px 0;
   font-weight:bold;
+}
+
+.bar-bg{
+  background:#e5e7eb;
+  height:10px;
+  border-radius:6px;
+  overflow:hidden;
+  margin:5px 0;
+}
+
+.bar{
+  height:10px;
+  background:#2563eb;
 }
 
 .gold{color:gold;}
 .silver{color:silver;}
 .bronze{color:#cd7f32;}
+
+.master{
+  color:#d97706;
+  font-weight:bold;
+}
 </style>
 </head>
 
@@ -72,7 +90,7 @@ select{
 <script>
 
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
-const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
+const API_KEY = "PASTE_API_KEY_SINI"; // Ganti API key
 
 
 let students = [];
@@ -82,7 +100,6 @@ let scores = [];
 // ================= LOAD DATA =================
 async function loadData(){
 
-  // Ambil murid
   const res1 = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
     headers:{
       apikey:API_KEY,
@@ -93,7 +110,6 @@ async function loadData(){
   students = await res1.json();
 
 
-  // Ambil scores
   const res2 = await fetch(`${API_URL}/rest/v1/scores?select=student_id,sifir,markah,teacher_id`,{
     headers:{
       apikey:API_KEY,
@@ -144,7 +160,6 @@ function updateRanking(){
       let lulusCount = 0;
 
 
-      // Kira sifir yang sah lulus (4 guru berbeza)
       for(let i=1;i<=12;i++){
 
         const guruSet = new Set();
@@ -181,7 +196,6 @@ function updateRanking(){
   });
 
 
-  // Susun ikut jumlah lulus (besar → kecil)
   result.sort((a,b)=>b.lulus-a.lulus);
 
 
@@ -190,16 +204,30 @@ function updateRanking(){
 
   result.forEach((r,i)=>{
 
-    let cls="";
+    let medal="";
+    if(i==0) medal="🥇";
+    else if(i==1) medal="🥈";
+    else if(i==2) medal="🥉";
 
-    if(i==0) cls="gold";
-    else if(i==1) cls="silver";
-    else if(i==2) cls="bronze";
+
+    let master = r.lulus>=12 ? `<span class="master">🏆 MASTER</span>` : "";
+
+    let percent = (r.lulus/12)*100;
 
 
     html += `
-      <div class="rank ${cls}">
-        ${i+1}. ${r.nama} (${r.kelas}) — ${r.lulus} Sifir 🎉
+      <div class="rank">
+
+        ${medal} ${i+1}. ${r.nama} (${r.kelas}) ${master}
+
+        <div class="bar-bg">
+          <div class="bar" style="width:${percent}%"></div>
+        </div>
+
+        ${r.lulus} / 12 Sifir
+
+        <hr>
+
       </div>
     `;
 
@@ -224,4 +252,3 @@ document.getElementById("kelasSelect")
 
 </body>
 </html>
-
