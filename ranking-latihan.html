@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ranking Latihan - Super Sifir</title>
+
+<style>
+body{
+  font-family:Arial, sans-serif;
+  background:#f5f7fb;
+  max-width:700px;
+  margin:auto;
+  padding:20px;
+}
+
+h1{
+  text-align:center;
+  color:#1e40af;
+}
+
+select{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+
+.card{
+  background:white;
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+.rank{
+  padding:8px;
+  margin:5px 0;
+  font-weight:bold;
+  border-bottom:1px solid #eee;
+}
+
+.gold{color:gold;}
+.silver{color:silver;}
+.bronze{color:#cd7f32;}
+
+button{
+  margin-top:15px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  background:#2563eb;
+  color:white;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🏆 Ranking Latihan (Top 10)</h1>
+
+<label>Pilih Kelas</label>
+<select id="kelasSelect">
+<option value="">Semua Kelas</option>
+</select>
+
+<div id="ranking"></div>
+
+<button onclick="location.href='index.html'">
+🏠 Menu Utama
+</button>
+
+<script>
+
+const API_URL="https://uziefozgozmnckfssoyv.supabase.co";
+const API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A"; // GANTI
+
+let students=[];
+let latihan=[];
+
+// ================= LOAD DATA =================
+async function loadData(){
+
+  const res1 = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
+    headers:{apikey:API_KEY,Authorization:`Bearer ${API_KEY}`}
+  });
+
+  students = await res1.json();
+
+  const res2 = await fetch(`${API_URL}/rest/v1/latihan_scores?select=student_id,betul`,{
+    headers:{apikey:API_KEY,Authorization:`Bearer ${API_KEY}`}
+  });
+
+  latihan = await res2.json();
+
+  // Isi dropdown kelas
+  const kelasSet=new Set(students.map(s=>s.kelas));
+  const select=document.getElementById("kelasSelect");
+
+  kelasSet.forEach(k=>{
+    const o=document.createElement("option");
+    o.value=k;
+    o.textContent=k;
+    select.appendChild(o);
+  });
+
+  updateRanking();
+}
+
+
+// ================= KIRA RANKING =================
+function updateRanking(){
+
+  const kelas=document.getElementById("kelasSelect").value;
+
+  let result=[];
+
+  students.forEach(s=>{
+
+    if(kelas===""||s.kelas===kelas){
+
+      const totalBetul = latihan
+        .filter(l=>l.student_id===s.id)
+        .reduce((sum,l)=>sum + l.betul,0);
+
+      result.push({
+        nama:s.nama,
+        kelas:s.kelas,
+        markah:totalBetul
+      });
+
+    }
+
+  });
+
+  // Susun ikut markah tertinggi
+  result.sort((a,b)=>b.markah-a.markah);
+
+  // Ambil Top 10 sahaja
+  result=result.slice(0,10);
+
+  let html='<div class="card">';
+
+  result.forEach((r,i)=>{
+
+    let cls="";
+    if(i===0)cls="gold";
+    else if(i===1)cls="silver";
+    else if(i===2)cls="bronze";
+
+    html+=`
+      <div class="rank ${cls}">
+        ${i+1}. ${r.nama} (${r.kelas}) — ${r.markah} markah
+      </div>
+    `;
+
+  });
+
+  html+='</div>';
+
+  document.getElementById("ranking").innerHTML=html;
+
+}
+
+document.getElementById("kelasSelect")
+.addEventListener("change",updateRanking);
+
+loadData();
+
+</script>
+
+</body>
+</html>
