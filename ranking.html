@@ -82,6 +82,7 @@ let scores = [];
 // ================= LOAD DATA =================
 async function loadData(){
 
+  // Ambil murid
   const res1 = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
     headers:{
       apikey:API_KEY,
@@ -92,6 +93,7 @@ async function loadData(){
   students = await res1.json();
 
 
+  // Ambil scores
   const res2 = await fetch(`${API_URL}/rest/v1/scores?select=student_id,sifir,markah,teacher_id`,{
     headers:{
       apikey:API_KEY,
@@ -102,7 +104,7 @@ async function loadData(){
   scores = await res2.json();
 
 
-  // Isi kelas
+  // Isi dropdown kelas
   const kelasSet = new Set();
 
   students.forEach(s=>{
@@ -110,7 +112,7 @@ async function loadData(){
   });
 
 
-  const select=document.getElementById("kelasSelect");
+  const select = document.getElementById("kelasSelect");
 
   select.innerHTML='<option value="">Semua Kelas</option>';
 
@@ -132,17 +134,17 @@ function updateRanking(){
 
   const kelas = document.getElementById("kelasSelect").value;
 
-  let result=[];
+  let result = [];
 
 
   students.forEach(s=>{
 
     if(kelas==="" || s.kelas===kelas){
 
-      let lulusCount=0;
+      let lulusCount = 0;
 
 
-      // Kira sifir yang dah sah lulus
+      // Kira sifir yang sah lulus (4 guru berbeza)
       for(let i=2;i<=12;i++){
 
         const guruSet = new Set();
@@ -151,4 +153,74 @@ function updateRanking(){
         scores.forEach(r=>{
 
           if(
-            r.student_id===s.id &&
+            r.student_id === s.id &&
+            r.sifir == i &&
+            r.markah == 1
+          ){
+            guruSet.add(r.teacher_id);
+          }
+
+        });
+
+
+        if(guruSet.size >= 4){
+          lulusCount++;
+        }
+
+      }
+
+
+      result.push({
+        nama: s.nama,
+        kelas: s.kelas,
+        lulus: lulusCount
+      });
+
+    }
+
+  });
+
+
+  // Susun ikut jumlah lulus (besar → kecil)
+  result.sort((a,b)=>b.lulus-a.lulus);
+
+
+  let html = '<div class="card">';
+
+
+  result.forEach((r,i)=>{
+
+    let cls="";
+
+    if(i==0) cls="gold";
+    else if(i==1) cls="silver";
+    else if(i==2) cls="bronze";
+
+
+    html += `
+      <div class="rank ${cls}">
+        ${i+1}. ${r.nama} (${r.kelas}) — ${r.lulus} Sifir 🎉
+      </div>
+    `;
+
+  });
+
+
+  html += '</div>';
+
+  document.getElementById("ranking").innerHTML = html;
+
+}
+
+
+
+// ================= START =================
+loadData();
+
+document.getElementById("kelasSelect")
+  .addEventListener("change", updateRanking);
+
+</script>
+
+</body>
+</html>
