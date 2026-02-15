@@ -8,63 +8,115 @@
 
 <style>
 body{
-  font-family: Arial, sans-serif;
-  background:#f5f7fb;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  min-height:100vh;
   margin:0;
-  padding:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.container{
-  max-width:500px;
-  margin:auto;
+.card{
   background:white;
-  padding:30px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  width:100%;
+  max-width:420px;
+  padding:30px 25px;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
   text-align:center;
 }
 
-h1{
-  margin-bottom:30px;
+.logo{
+  font-size:28px;
+  font-weight:bold;
+  color:#1e40af;
+  margin-bottom:5px;
+}
+
+.subtitle{
+  font-size:14px;
+  color:#555;
+  margin-bottom:25px;
 }
 
 button{
   width:100%;
   padding:12px;
   margin:10px 0;
-  border-radius:8px;
   border:none;
+  border-radius:10px;
   font-size:16px;
   font-weight:bold;
   cursor:pointer;
+  transition:0.2s;
+}
+
+.btn-login{
   background:#2563eb;
   color:white;
 }
 
-button:hover{
+.btn-login:hover{
   background:#1d4ed8;
 }
-</style>
 
+.btn-rekod{
+  background:#10b981;
+  color:white;
+}
+
+.btn-rekod:hover{
+  background:#059669;
+}
+
+.btn-rank{
+  background:#f59e0b;
+  color:white;
+}
+
+.btn-rank:hover{
+  background:#d97706;
+}
+
+.footer{
+  margin-top:20px;
+  font-size:12px;
+  color:#777;
+}
+</style>
 </head>
+
 
 <body>
 
-<div class="container">
+<div class="card">
 
-  <h1>Super Sifir Digital STEM1</h1>
+  <div class="logo">
+    📘 Super Sifir Digital STEM1
+  </div>
 
-  <button onclick="location.href='login.html'">
+  <div class="subtitle">
+    Sistem Pemantauan Penguasaan Sifir Murid
+  </div>
+
+
+  <button class="btn-login" onclick="location.href='login.html'">
     🔐 Login Guru
   </button>
 
-  <button onclick="location.href='rekod.html'">
+  <button class="btn-rekod" onclick="location.href='rekod.html'">
     📊 Semak Rekod Murid
   </button>
 
-  <button onclick="location.href='ranking.html'">
+  <button class="btn-rank" onclick="location.href='ranking.html'">
     🏆 Ranking Murid
   </button>
+
+
+  <div class="footer">
+    © 2026 SK (LKTP) Tembangau 1 | STEM1
+  </div>
 
 </div>
 
