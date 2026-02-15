@@ -20,20 +20,25 @@ body{
 .card{
   background:white;
   width:100%;
-  max-width:420px;
-  padding:25px 22px;
+  max-width:900px;
+  padding:25px;
   border-radius:16px;
   box-shadow:0 10px 25px rgba(0,0,0,0.12);
+}
+
+
+/* HEADER */
+.header{
   text-align:center;
+  margin-bottom:20px;
 }
 
 .school-logo{
-  width:90px;
-  margin-bottom:8px;
+  width:80px;
 }
 
 .logo{
-  font-size:26px;
+  font-size:24px;
   font-weight:bold;
   color:#1e40af;
 }
@@ -41,21 +46,46 @@ body{
 .subtitle{
   font-size:13px;
   color:#555;
-  margin-bottom:15px;
+}
+
+
+/* MAIN LAYOUT */
+.main{
+  display:flex;
+  gap:20px;
+}
+
+
+/* LEFT MENU */
+.menu{
+  width:45%;
+}
+
+
+/* RIGHT IMAGE */
+.hero{
+  width:55%;
+}
+
+.hero img{
+  width:100%;
+  height:100%;
+  max-height:350px;
+  object-fit:cover;
+  border-radius:12px;
 }
 
 
 /* SECTION */
 .section{
-  margin-top:20px;
-  text-align:left;
+  margin-bottom:20px;
 }
 
 .section-title{
-  font-size:14px;
+  font-size:13px;
   font-weight:bold;
   color:#2563eb;
-  margin-bottom:8px;
+  margin-bottom:6px;
   border-left:4px solid #2563eb;
   padding-left:6px;
 }
@@ -64,11 +94,11 @@ body{
 /* BUTTON */
 button{
   width:100%;
-  padding:12px;
-  margin:6px 0;
+  padding:8px;
+  margin:5px 0;
   border:none;
-  border-radius:10px;
-  font-size:15px;
+  border-radius:8px;
+  font-size:13px;
   font-weight:bold;
   cursor:pointer;
   transition:0.2s;
@@ -94,10 +124,26 @@ button{
 .btn-rules:hover{background:#4b5563;}
 
 
+/* FOOTER */
 .footer{
-  margin-top:20px;
+  text-align:center;
+  margin-top:15px;
   font-size:11px;
   color:#777;
+}
+
+
+/* RESPONSIVE (PHONE) */
+@media(max-width:700px){
+
+  .main{
+    flex-direction:column;
+  }
+
+  .menu,.hero{
+    width:100%;
+  }
+
 }
 </style>
 </head>
@@ -107,49 +153,75 @@ button{
 
 <div class="card">
 
-<img src="assets/logo-sk.png" class="school-logo">
+<!-- HEADER -->
+<div class="header">
 
-<div class="logo">Super Sifir Digital STEM1</div>
+  <img src="assets/logo-sk.png" class="school-logo">
 
-<div class="subtitle">SK (LKTP) Tembangau 1</div>
+  <div class="logo">Super Sifir Digital STEM1</div>
 
-
-<!-- ================= MURID ================= -->
-<div class="section">
-
-  <div class="section-title">👦 UNTUK MURID</div>
-
-  <button class="btn-latihan" onclick="location.href='latihan.html'">
-    ✏️ Latihan Hafal Sifir
-  </button>
-
-  <button class="btn-rekod" onclick="location.href='rekod.html'">
-    📊 Semak Rekod
-  </button>
+  <div class="subtitle">SK (LKTP) Tembangau 1</div>
 
 </div>
 
 
-<!-- ================= GURU ================= -->
-<div class="section">
+<!-- MAIN -->
+<div class="main">
 
-  <div class="section-title">👨‍🏫 UNTUK GURU / ADMIN</div>
 
-  <button class="btn-rank" onclick="location.href='ranking.html'">
-    🏆 Ranking Murid
-  </button>
+  <!-- LEFT MENU -->
+  <div class="menu">
 
-  <button class="btn-login" onclick="location.href='login.html'">
-    🔐 Login Guru
-  </button>
+    <!-- MURID -->
+    <div class="section">
 
-  <button class="btn-rules" onclick="location.href='rules.html'">
-    📜 Peraturan Program
-  </button>
+      <div class="section-title">👦 UNTUK MURID</div>
+
+      <button class="btn-latihan" onclick="location.href='latihan.html'">
+        ✏️ Latihan Hafal
+      </button>
+
+      <button class="btn-rekod" onclick="location.href='rekod.html'">
+        📊 Semak Rekod
+      </button>
+
+    </div>
+
+
+    <!-- GURU -->
+    <div class="section">
+
+      <div class="section-title">👨‍🏫 UNTUK GURU / ADMIN</div>
+
+      <button class="btn-rank" onclick="location.href='ranking.html'">
+        🏆 Ranking
+      </button>
+
+      <button class="btn-login" onclick="location.href='login.html'">
+        🔐 Login Guru
+      </button>
+
+      <button class="btn-rules" onclick="location.href='rules.html'">
+        📜 Peraturan
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- RIGHT IMAGE -->
+  <div class="hero">
+
+    <img src="assets/bg-hero.png" alt="Hero">
+
+  </div>
+
 
 </div>
 
 
+<!-- FOOTER -->
 <div class="footer">
 © 2026 SK (LKTP) Tembangau 1 | STEM1
 </div>
