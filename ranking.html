@@ -175,13 +175,22 @@ function updateRanking(){
 
       let sah = 0;
 
-
-      // Kira sifir sah (3 guru)
       for(let i=2;i<=12;i++){
 
-        const rekod = scores.filter(
-          r => r.student_id===s.id && r.sifir==i
-        );
+        let pass = 0;
+
+for(let i=2;i<=12;i++){
+
+  const count = scores.filter(
+    r => r.student_id===s.id && r.sifir==i && r.markah==1
+  ).length;
+
+  if(count >= 4){
+    pass++;
+  }
+
+}
+;
 
         const pass = rekod.filter(r=>r.markah==1);
         const guru = new Set(pass.map(r=>r.teacher_id));
@@ -250,3 +259,4 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 </body>
 </html>
+
