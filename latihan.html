@@ -120,7 +120,6 @@ button{
 <input type="number" id="jawapan" placeholder="Jawapan">
 
 <button class="btn-check" onclick="semak()">Semak</button>
-<button class="btn-next" onclick="next()">Seterusnya</button>
 <button class="btn-end" onclick="tamat()">Tamat & Simpan</button>
 
 <p id="msg"></p>
@@ -225,19 +224,39 @@ document.getElementById("msg").innerText="";
 
 // SEMAK
 function semak(){
-const j=parseInt(document.getElementById("jawapan").value);
-if(j===jawapanBetul){
-betul++;
-document.getElementById("msg").innerText="✅ Betul";
-document.getElementById("msg").style.color="green";
-}else{
-salah++;
-document.getElementById("msg").innerText=`❌ Salah (${jawapanBetul})`;
-document.getElementById("msg").style.color="red";
+
+  const j = parseInt(document.getElementById("jawapan").value);
+
+  if(isNaN(j)){
+    return;
+  }
+
+  const msg = document.getElementById("msg");
+
+  if(j === jawapanBetul){
+
+    betul++;
+    msg.innerText = "✅ Betul!";
+    msg.style.color = "green";
+
+  }else{
+
+    salah++;
+    msg.innerText = `❌ Salah. Jawapan: ${jawapanBetul}`;
+    msg.style.color = "red";
+
+  }
+
+  document.getElementById("betul").innerText = betul;
+  document.getElementById("salah").innerText = salah;
+
+  // ⏳ Tunggu 1 saat, terus next
+  setTimeout(()=>{
+    next();
+  }, 800);
+
 }
-document.getElementById("betul").innerText=betul;
-document.getElementById("salah").innerText=salah;
-}
+
 
 // TAMAT & SAVE
 async function tamat(){
@@ -262,9 +281,16 @@ location.reload();
 }
 
 loadStudents();
+document.getElementById("jawapan")
+  .addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+      semak();
+    }
+});
 
 </script>
 
 </body>
 </html>
+
 
