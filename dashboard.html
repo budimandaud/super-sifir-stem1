@@ -86,8 +86,13 @@ button{
 <script>
 // Protect page
 if(localStorage.getItem("login")!=="true"){
+
+  // Simpan page asal
+  localStorage.setItem("redirect_after_login", location.pathname);
+
   location.href="login.html";
 }
+
 </script>
 
 
@@ -349,3 +354,4 @@ document.getElementById("kelasSelect")
 
 </body>
 </html>
+
