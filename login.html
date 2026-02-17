@@ -8,36 +8,39 @@
 
 <style>
 body{
-  font-family: Arial, sans-serif;
+  font-family:"Segoe UI",Arial,sans-serif;
   background:#f5f7fb;
   padding:20px;
 }
 
 .container{
-  max-width:400px;
+  max-width:420px;
   margin:auto;
   background:white;
   padding:25px;
   border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
   text-align:center;
 }
 
 h1{
   margin-bottom:5px;
+  color:#1e40af;
 }
 
 h3{
   margin-top:0;
   color:#444;
+  font-weight:normal;
 }
 
 input,button{
   width:100%;
   padding:10px;
   margin:8px 0;
-  border-radius:6px;
+  border-radius:8px;
   border:1px solid #ddd;
+  font-size:14px;
 }
 
 button{
@@ -45,11 +48,18 @@ button{
   color:white;
   border:none;
   font-weight:bold;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+button:hover{
+  background:#1d4ed8;
 }
 
 #error{
   color:red;
-  margin-top:10px;
+  margin-top:8px;
+  font-size:13px;
 }
 </style>
 </head>
@@ -63,15 +73,17 @@ button{
 <h3>🔐 Login Guru</h3>
 
 
-<input type="text" id="username" placeholder="Username">
-<input type="password" id="password" placeholder="Password">
+<input type="text" id="username" placeholder="Username" autocomplete="username">
+
+<input type="password" id="password" placeholder="Password" autocomplete="current-password">
+
 
 <button onclick="login()">Login</button>
 
 <p id="error"></p>
 
 
-<button onclick="location.href='index.html'">
+<button onclick="location.href='index.html'" style="background:#6b7280;margin-top:10px;">
 🏠 Menu Utama
 </button>
 
@@ -81,9 +93,10 @@ button{
 <script>
 
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
-const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
+const API_KEY = "PASTE_API_KEY_ANDA_SINI";
 
 
+// ================= LOGIN =================
 async function login(){
 
   const username = document.getElementById("username").value.trim();
@@ -92,43 +105,77 @@ async function login(){
 
   if(!username || !password){
 
-    document.getElementById("error").innerText="Sila isi semua ruangan";
+    document.getElementById("error").innerText="❗ Sila isi semua ruangan";
     return;
 
   }
+
+
+  document.getElementById("error").innerText="⏳ Sedang log masuk...";
 
 
   const u = encodeURIComponent(username);
   const p = encodeURIComponent(password);
 
 
-  const url = `${API_URL}/rest/v1/teachers?select=*&username=eq.${u}&password=eq.${p}`;
+  const url = `${API_URL}/rest/v1/teachers?select=id,nama&username=eq.${u}&password=eq.${p}`;
 
 
-  const res = await fetch(url,{
+  try{
 
-    headers:{
-      apikey:API_KEY,
-      Authorization:`Bearer ${API_KEY}`
+    const res = await fetch(url,{
+
+      headers:{
+        apikey:API_KEY,
+        Authorization:`Bearer ${API_KEY}`
+      }
+
+    });
+
+
+    if(!res.ok){
+      throw new Error("Network error");
     }
 
-  });
+
+    const data = await res.json();
 
 
-  const data = await res.json();
+    if(data.length===1){
+
+      // Simpan session
+      localStorage.setItem("login","true");
+      localStorage.setItem("teacher_id",data[0].id);
+      localStorage.setItem("teacher_name",data[0].nama);
 
 
-  if(data.length>0){
+      // Redirect asal
+      const redirect = localStorage.getItem("redirect_after_login");
 
-    localStorage.setItem("login","true");
-    localStorage.setItem("teacher_id",data[0].id);
-    localStorage.setItem("teacher_name",data[0].nama);
 
-    location.href="ujian.html";
+      if(redirect){
 
-  }else{
+        localStorage.removeItem("redirect_after_login");
+        location.href = redirect;
 
-    document.getElementById("error").innerText="❌ Username atau password salah";
+      }else{
+
+        location.href = "ujian.html";
+
+      }
+
+
+    }else{
+
+      document.getElementById("error").innerText="❌ Username atau password salah";
+
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+    document.getElementById("error").innerText="❌ Ralat sistem. Cuba lagi.";
 
   }
 
