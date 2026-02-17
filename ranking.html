@@ -38,7 +38,7 @@ select{
 
 .rank{
   font-size:15px;
-  margin:10px 0;
+  margin:12px 0;
   font-weight:bold;
 }
 
@@ -47,7 +47,7 @@ select{
   height:10px;
   border-radius:6px;
   overflow:hidden;
-  margin:5px 0;
+  margin:6px 0;
 }
 
 .bar{
@@ -59,10 +59,17 @@ select{
 .silver{color:silver;}
 .bronze{color:#cd7f32;}
 
-.master{
-  color:#d97706;
-  font-weight:bold;
+.badge{
+  padding:2px 6px;
+  border-radius:5px;
+  font-size:11px;
+  margin-left:6px;
 }
+
+.master{background:#fde68a;color:#92400e;}
+.pro{background:#bfdbfe;color:#1e40af;}
+.active{background:#bbf7d0;color:#166534;}
+.try{background:#fee2e2;color:#991b1b;}
 </style>
 </head>
 
@@ -70,7 +77,7 @@ select{
 <body>
 
 <h1>Super Sifir Digital STEM1</h1>
-<h3>🏆 Ranking Murid (Lulus Sah)</h3>
+<h3>🏆 Ranking Murid (Sistem Point)</h3>
 
 
 <label>Pilih Kelas</label>
@@ -90,8 +97,7 @@ select{
 <script>
 
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
-const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A"; // Ganti API key
-
+const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
 
 let students = [];
 let scores = [];
@@ -100,39 +106,33 @@ let scores = [];
 // ================= LOAD DATA =================
 async function loadData(){
 
-  const res1 = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
-    headers:{
-      apikey:API_KEY,
-      Authorization:`Bearer ${API_KEY}`
-    }
+  const r1 = await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
+    headers:{apikey:API_KEY,Authorization:`Bearer ${API_KEY}`}
   });
 
-  students = await res1.json();
+  students = await r1.json();
 
 
-  const res2 = await fetch(`${API_URL}/rest/v1/scores?select=student_id,sifir,markah,teacher_id`,{
-    headers:{
-      apikey:API_KEY,
-      Authorization:`Bearer ${API_KEY}`
-    }
+  const r2 = await fetch(`${API_URL}/rest/v1/scores?select=student_id,sifir,markah,teacher_id`,{
+    headers:{apikey:API_KEY,Authorization:`Bearer ${API_KEY}`}
   });
 
-  scores = await res2.json();
+  scores = await r2.json();
 
 
-  // Isi dropdown kelas
-  const kelasSet = new Set();
+  // Dropdown kelas
+  const set = new Set();
 
   students.forEach(s=>{
-    if(s.kelas) kelasSet.add(s.kelas);
+    if(s.kelas) set.add(s.kelas);
   });
 
 
-  const select = document.getElementById("kelasSelect");
+  const select=document.getElementById("kelasSelect");
 
   select.innerHTML='<option value="">Semua Kelas</option>';
 
-  kelasSet.forEach(k=>{
+  set.forEach(k=>{
     const o=document.createElement("option");
     o.value=k;
     o.textContent=k;
@@ -145,32 +145,44 @@ async function loadData(){
 }
 
 
-// ================= KIRA RANKING =================
+// ================= BADGE =================
+function getBadge(point){
+
+  if(point>=40) return `<span class="badge master">🏆 MASTER</span>`;
+  if(point>=30) return `<span class="badge pro">⭐ PRO</span>`;
+  if(point>=20) return `<span class="badge active">👍 AKTIF</span>`;
+  return `<span class="badge try">🔥 CUBA LAGI</span>`;
+
+}
+
+
+// ================= KIRA =================
 function updateRanking(){
 
   const kelas = document.getElementById("kelasSelect").value;
 
-  let result = [];
+  let result=[];
 
 
   students.forEach(s=>{
 
     if(kelas==="" || s.kelas===kelas){
 
-      let lulusCount = 0;
+      let totalPoint=0;
 
 
+      // Kira setiap sifir
       for(let i=1;i<=12;i++){
 
-        const guruSet = new Set();
+        const guruSet=new Set();
 
 
         scores.forEach(r=>{
 
           if(
-            r.student_id === s.id &&
-            r.sifir == i &&
-            r.markah == 1
+            r.student_id===s.id &&
+            r.sifir==i &&
+            r.markah==1
           ){
             guruSet.add(r.teacher_id);
           }
@@ -178,17 +190,15 @@ function updateRanking(){
         });
 
 
-        if(guruSet.size >= 4){
-          lulusCount++;
-        }
+        totalPoint += Math.min(guruSet.size,4);
 
       }
 
 
       result.push({
-        nama: s.nama,
-        kelas: s.kelas,
-        lulus: lulusCount
+        nama:s.nama,
+        kelas:s.kelas,
+        point:totalPoint
       });
 
     }
@@ -196,10 +206,13 @@ function updateRanking(){
   });
 
 
-  result.sort((a,b)=>b.lulus-a.lulus);
+  // Sort
+  result.sort((a,b)=>b.point-a.point);
 
 
-  let html = '<div class="card">';
+  let html='<div class="card">';
+
+  const maxPoint = 48; // 12 sifir x 4
 
 
   result.forEach((r,i)=>{
@@ -210,33 +223,36 @@ function updateRanking(){
     else if(i==2) medal="🥉";
 
 
-    let master = r.lulus>=12 ? `<span class="master">🏆 MASTER</span>` : "";
+    let badge = getBadge(r.point);
 
-    let percent = (r.lulus/12)*100;
+    let percent = (r.point/maxPoint)*100;
 
 
-    html += `
+    html+=`
+
       <div class="rank">
 
-        ${medal} ${i+1}. ${r.nama} (${r.kelas}) ${master}
+        ${medal} ${i+1}. ${r.nama} (${r.kelas})
+        ${badge}
 
         <div class="bar-bg">
           <div class="bar" style="width:${percent}%"></div>
         </div>
 
-        ${r.lulus} / 12 Sifir
+        ⭐ ${r.point} / ${maxPoint} point
 
         <hr>
 
       </div>
+
     `;
 
   });
 
 
-  html += '</div>';
+  html+='</div>';
 
-  document.getElementById("ranking").innerHTML = html;
+  document.getElementById("ranking").innerHTML=html;
 
 }
 
@@ -246,10 +262,9 @@ function updateRanking(){
 loadData();
 
 document.getElementById("kelasSelect")
-  .addEventListener("change", updateRanking);
+  .addEventListener("change",updateRanking);
 
 </script>
 
 </body>
 </html>
-
