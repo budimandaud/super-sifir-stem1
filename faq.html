@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>FAQ - Super Sifir Digital STEM1</title>
 
 <style>
@@ -25,26 +24,45 @@ body{
 h1{
   text-align:center;
   color:#1e40af;
+  margin-bottom:25px;
 }
 
+/* FAQ BOX */
 .faq-item{
-  margin:15px 0;
-  padding:15px;
+  margin:12px 0;
   border-radius:10px;
-  background:#f9fafb;
-  border-left:5px solid #2563eb;
+  overflow:hidden;
+  border:1px solid #e5e7eb;
 }
 
-.q{
+/* QUESTION */
+.faq-question{
+  background:#2563eb;
+  color:white;
+  padding:12px;
+  cursor:pointer;
   font-weight:bold;
-  color:#1e40af;
-  margin-bottom:5px;
+  transition:0.2s;
 }
 
-.a{
+.faq-question:hover{
+  background:#1d4ed8;
+}
+
+/* ANSWER */
+.faq-answer{
+  padding:15px;
+  background:#f9fafb;
+  display:none;
   font-size:14px;
   line-height:1.6;
   color:#333;
+}
+
+/* list padding fix */
+.faq-answer ul{
+  padding-left:20px;
+  margin-top:8px;
 }
 
 button{
@@ -65,139 +83,71 @@ button:hover{
 </style>
 </head>
 
-
 <body>
 
 <div class="card">
 
-<h1>❓ Soalan Lazim (FAQ)<br>Super Sifir Digital STEM1</h1>
+<h1>❓ Soalan Lazim (FAQ)</h1>
 
 
-<!-- FAQ 1 -->
 <div class="faq-item">
-  <div class="q">1. Apakah itu Super Sifir Digital STEM1?</div>
-  <div class="a">
-    Super Sifir Digital STEM1 ialah sistem digital untuk membantu
-    murid menguasai sifir melalui latihan, ujian guru dan pemantauan
-    pencapaian secara atas talian.
-  </div>
+<div class="faq-question" onclick="toggle(this)">
+1. Apakah itu Super Sifir Digital STEM1?
+</div>
+<div class="faq-answer">
+Sistem digital untuk membantu murid menguasai sifir melalui latihan,
+ujian guru dan pemantauan pencapaian secara atas talian.
+</div>
 </div>
 
 
-<!-- FAQ 2 -->
 <div class="faq-item">
-  <div class="q">2. Bagaimana murid dianggap Lulus sesuatu sifir?</div>
-  <div class="a">
-    Murid perlu lulus ujian sifir sebanyak  <b>4 kali</b>  dengan
-     <b>4 orang guru berlainan</b> sebelum dikira LULUS SAH.
-  </div>
+<div class="faq-question" onclick="toggle(this)">
+2. Bagaimana murid dianggap Lulus sesuatu sifir?
+</div>
+<div class="faq-answer">
+Murid perlu lulus ujian sifir sebanyak <b>4 kali</b> dengan
+<b>4 orang guru berlainan</b> sebelum dikira LULUS SAH.
+</div>
 </div>
 
 
-<!-- FAQ 3 -->
 <div class="faq-item">
-  <div class="q">3. Kenapa perlu 4 orang guru berbeza?</div>
-  <div class="a">
-    Untuk memastikan penguasaan sifir adalah konsisten,
-    bukan hafal sementara sahaja.
-  </div>
+<div class="faq-question" onclick="toggle(this)">
+3. Bagaimana sistem ranking dikira?
+</div>
+<div class="faq-answer">
+Setiap kelulusan menyumbang point:
+<ul>
+<li>1 guru = 1 point</li>
+<li>2 guru = 2 point</li>
+<li>3 guru = 3 point</li>
+<li>4 guru = 4 point</li>
+</ul>
+Jumlah point keseluruhan akan menentukan kedudukan ranking murid.
+</div>
 </div>
 
 
-<!-- FAQ 4 -->
 <div class="faq-item">
-  <div class="q">4. Apakah maksud ✔️ dalam rekod murid?</div>
-  <div class="a">
-    ✔️ menunjukkan bilangan guru yang telah mengesahkan
-    kelulusan sifir murid tersebut.
-  </div>
+<div class="faq-question" onclick="toggle(this)">
+4. Apakah maksud ✔️ dalam rekod murid?
+</div>
+<div class="faq-answer">
+✔️ menunjukkan bilangan guru yang telah mengesahkan
+kelulusan sifir murid tersebut.
+</div>
 </div>
 
 
-<!-- FAQ 5 -->
 <div class="faq-item">
-  <div class="q">5. Bagaimana sistem ranking dikira?</div>
-  <div class="a">
-    Setiap kelulusan menyumbang point:
-    <ul>
-      <li>1 guru = 1 point</li>
-      <li>2 guru = 2 point</li>
-      <li>3 guru = 3 point</li>
-      <li>4 guru = 4 point</li>
-    </ul>
-    Jumlah point akan digunakan untuk ranking.
-  </div>
+<div class="faq-question" onclick="toggle(this)">
+5. Apakah maksud Badge MASTER?
 </div>
-
-
-<!-- FAQ 6 -->
-<div class="faq-item">
-  <div class="q">6. Apakah itu Badge MASTER?</div>
-  <div class="a">
-    Badge MASTER diberikan kepada murid yang
-    menguasai hampir semua sifir dengan markah tinggi
-    dan konsisten.
-  </div>
+<div class="faq-answer">
+Badge MASTER diberikan kepada murid yang menguasai
+semua sifir 1 hingga 12 secara sah.
 </div>
-
-
-<!-- FAQ 7 -->
-<div class="faq-item">
-  <div class="q">7. Adakah murid wajib buat latihan digital?</div>
-  <div class="a">
-    Tidak wajib, tetapi sangat digalakkan kerana
-    latihan membantu murid bersedia sebelum diuji.
-  </div>
-</div>
-
-
-<!-- FAQ 8 -->
-<div class="faq-item">
-  <div class="q">8. Bolehkah ibu bapa melihat rekod anak?</div>
-  <div class="a">
-    Ya. Ibu bapa boleh menggunakan fungsi
-    "Semak Rekod Anda" untuk melihat pencapaian anak.
-  </div>
-</div>
-
-
-<!-- FAQ 9 -->
-<div class="faq-item">
-  <div class="q">9. Jika murid berpindah sekolah, bagaimana rekodnya?</div>
-  <div class="a">
-    Data boleh dikemaskini oleh guru melalui sistem
-    atau Supabase sekiranya diperlukan.
-  </div>
-</div>
-
-
-<!-- FAQ 10 -->
-<div class="faq-item">
-  <div class="q">10. Siapakah yang mengurus sistem ini?</div>
-  <div class="a">
-    Sistem ini dibangunkan dan diselenggara oleh
-    pihak sekolah dengan sokongan semua guru STEM 1.
-  </div>
-</div>
-
-
-<!-- FAQ 11 -->
-<div class="faq-item">
-  <div class="q">11. Adakah sistem ini selamat?</div>
-  <div class="a">
-    Ya. Data disimpan dalam pangkalan data selamat
-    menggunakan teknologi cloud (Supabase).
-  </div>
-</div>
-
-
-<!-- FAQ 12 -->
-<div class="faq-item">
-  <div class="q">12. Bagaimana jika berlaku masalah teknikal?</div>
-  <div class="a">
-    Sila maklumkan kepada guru penyelaras
-    untuk tindakan lanjut.
-  </div>
 </div>
 
 
@@ -206,6 +156,14 @@ button:hover{
 </button>
 
 </div>
+
+<script>
+function toggle(element){
+  const answer = element.nextElementSibling;
+  answer.style.display =
+    answer.style.display === "block" ? "none" : "block";
+}
+</script>
 
 </body>
 </html>
