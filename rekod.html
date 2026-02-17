@@ -48,13 +48,18 @@ button:hover{
   background:white;
 }
 
-.pass{
+.ok{
   color:green;
   font-weight:bold;
 }
 
-.fail{
-  color:#2563eb;
+.wait{
+  color:#f59e0b;
+  font-weight:bold;
+}
+
+.none{
+  color:gray;
   font-weight:bold;
 }
 </style>
@@ -91,7 +96,7 @@ button:hover{
 <script>
 
 const API_URL = "https://uziefozgozmnckfssoyv.supabase.co";
-const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A"; // <-- ganti key sendiri
+const API_KEY = "ISI_API_KEY_ANDA"; // pastikan betul
 
 
 let allStudents = [];
@@ -169,8 +174,9 @@ async function semak(){
   const student = allStudents.find(s=>s.id===student_id);
 
 
+  // JOIN scores + teachers
   const res = await fetch(
-    `${API_URL}/rest/v1/scores?student_id=eq.${student_id}&select=sifir,markah,teacher_id`,
+    `${API_URL}/rest/v1/scores?student_id=eq.${student_id}&markah=eq.1&select=sifir,teachers(nama)`,
     {
       headers:{
         apikey:API_KEY,
@@ -183,20 +189,18 @@ async function semak(){
   const scores = await res.json();
 
 
-  // ===== KIRA LULUS GURU BERLAINAN =====
+  // ===== SIMPAN NAMA CIKGU =====
   const record = {};
 
 
   scores.forEach(r=>{
 
-    if(r.markah==1){
+    if(!record[r.sifir]){
+      record[r.sifir] = new Set();
+    }
 
-      if(!record[r.sifir]){
-        record[r.sifir] = new Set();
-      }
-
-      record[r.sifir].add(r.teacher_id);
-
+    if(r.teachers && r.teachers.nama){
+      record[r.sifir].add(r.teachers.nama);
     }
 
   });
@@ -211,35 +215,54 @@ async function semak(){
 
   for(let i=1;i<=12;i++){
 
+    let guruList=[];
+    let status="";
+
+
     if(record[i]){
 
-      const count = record[i].size;
+      guruList = Array.from(record[i]);
 
 
-      if(count>=4){
+      if(guruList.length>=4){
 
-        html+=`
-          <p>Sifir ${i} :
-          <span class="pass">🎉 LULUS</span></p>
+        status = `
+          <span class="ok">
+            ✔️ LULUS SAH
+          </span>
         `;
 
       }else{
 
-        html+=`
-          <p>Sifir ${i} :
-          <span class="fail">${"✔️".repeat(count)}</span></p>
+        status = `
+          <span class="wait">
+            🟡 BELUM SAH (${guruList.length}/4)
+          </span>
         `;
 
       }
 
     }else{
 
-      html+=`
-        <p>Sifir ${i} :
-        <span style="color:gray">⚠️ Belum Cuba</span></p>
+      status = `
+        <span class="none">
+          ⚠️ BELUM CUBA
+        </span>
       `;
 
     }
+
+
+    html+=`
+      <p>
+        Sifir ${i} :
+        ${status}
+        <br>
+        <small style="color:#555;">
+          ${guruList.length>0 ? "(" + guruList.join(" • ") + ")" : ""}
+        </small>
+      </p>
+    `;
 
   }
 
@@ -261,5 +284,3 @@ document.getElementById("kelasSelect")
 
 </body>
 </html>
-
-
