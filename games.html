@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Game Center - Super Sifir Digital STEM1</title>
+
+<style>
+body{
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  min-height:100vh;
+  margin:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.card{
+  background:white;
+  width:100%;
+  max-width:900px;
+  padding:25px;
+  border-radius:16px;
+  box-shadow:0 12px 25px rgba(0,0,0,0.15);
+}
+
+/* HEADER */
+.header{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.school-logo{
+  width:80px;
+}
+
+.logo{
+  font-size:26px;
+  font-weight:bold;
+  color:#1e40af;
+}
+
+.subtitle{
+  font-size:13px;
+  color:#555;
+}
+
+/* GRID */
+.games{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+
+/* GAME CARD */
+.game-card{
+  background:#f8fafc;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:20px;
+  text-align:center;
+  transition:0.3s;
+  cursor:pointer;
+}
+
+.game-card:hover{
+  transform:translateY(-6px) scale(1.02);
+  box-shadow:0 10px 20px rgba(0,0,0,0.1);
+}
+
+.game-icon{
+  font-size:40px;
+  margin-bottom:10px;
+}
+
+.game-title{
+  font-size:17px;
+  font-weight:bold;
+  color:#1e40af;
+  margin-bottom:5px;
+}
+
+.game-desc{
+  font-size:13px;
+  color:#555;
+  margin-bottom:12px;
+}
+
+.btn-play{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:8px 16px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.btn-play:hover{
+  background:#1d4ed8;
+}
+
+/* FOOTER */
+.footer{
+  text-align:center;
+  margin-top:25px;
+  font-size:11px;
+  color:#777;
+}
+
+/* BACK BTN */
+.back-btn{
+  margin-top:15px;
+  background:#6b7280;
+  color:white;
+  border:none;
+  padding:8px 18px;
+  border-radius:20px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.back-btn:hover{
+  background:#4b5563;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="card">
+
+<!-- HEADER -->
+<div class="header">
+
+  <img src="assets/logo-sk.png" class="school-logo">
+
+  <div class="logo">Super Sifir Digital STEM1</div>
+
+  <div class="subtitle">🎮 Pusat Permainan Pembelajaran Matematik</div>
+
+</div>
+
+
+<!-- GAME GRID -->
+<div class="games">
+
+
+<!-- GAME 1 -->
+<div class="game-card"
+onclick="openGame('https://gemini.google.com/share/8be71dcf51e3')">
+
+  <div class="game-icon">🚀</div>
+
+  <div class="game-title">
+    Misi Galaktik Sifir
+  </div>
+
+  <div class="game-desc">
+    Terbang angkasa sambil jawab sifir dengan pantas!
+  </div>
+
+  <button class="btn-play">
+    ▶️ Main Sekarang
+  </button>
+
+</div>
+
+
+<!-- GAME 2 -->
+<div class="game-card"
+onclick="openGame('https://gemini.google.com/share/ca7d7c56d8d2')">
+
+  <div class="game-icon">🛡️</div>
+
+  <div class="game-title">
+    Cyber Guard
+  </div>
+
+  <div class="game-desc">
+    Lindungi sistem digital dengan kuasa sifir.
+  </div>
+
+  <button class="btn-play">
+    ▶️ Main Sekarang
+  </button>
+
+</div>
+
+
+<!-- COMING SOON -->
+<div class="game-card">
+
+  <div class="game-icon">⚡</div>
+
+  <div class="game-title">
+    Game Rahsia Akan Datang
+  </div>
+
+  <div class="game-desc">
+    Nantikan permainan baru daripada Cikgu Budiman 😉
+  </div>
+
+  <button class="btn-play" disabled>
+    ⏳ Akan Datang
+  </button>
+
+</div>
+
+
+</div>
+
+
+<!-- BACK -->
+<div style="text-align:center">
+
+<button class="back-btn" onclick="location.href='index.html'">
+🏠 Menu Utama
+</button>
+
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">
+© 2026 SK (LKTP) Tembangau 1 | STEM1
+</div>
+
+
+</div>
+
+
+<script>
+
+function openGame(url){
+  window.open(url,"_blank");
+}
+
+</script>
+
+</body>
+</html>
