@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard Pencapaian - Super Sifir</title>
+
+<style>
+body{
+  font-family:"Segoe UI",Arial,sans-serif;
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+  background:#f5f7fb;
+}
+
+h1{
+  text-align:center;
+  color:#1e40af;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 5px 12px rgba(0,0,0,0.08);
+  margin-bottom:15px;
+}
+
+select{
+  padding:10px;
+  width:100%;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+
+.stat{
+  display:flex;
+  justify-content:space-between;
+  font-weight:bold;
+  margin:6px 0;
+}
+
+.bar{
+  background:#e5e7eb;
+  border-radius:6px;
+  overflow:hidden;
+  margin:4px 0 10px;
+}
+
+.bar-fill{
+  background:#2563eb;
+  height:14px;
+  width:0%;
+  transition:0.5s;
+}
+
+.warn{
+  color:#dc2626;
+  font-weight:bold;
+}
+
+.ok{
+  color:#16a34a;
+  font-weight:bold;
+}
+
+button{
+  padding:10px;
+  width:100%;
+  border:none;
+  border-radius:8px;
+  background:#10b981;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+
+
+<body>
+
+<script>
+// Protect page
+if(localStorage.getItem("login")!=="true"){
+  location.href="login.html";
+}
+</script>
+
+
+<h1>📊 Dashboard Pencapaian Sifir</h1>
+
+
+<div class="card">
+
+<label>Pilih Kelas</label>
+<select id="kelasSelect">
+  <option value="">Semua Kelas</option>
+</select>
+
+</div>
+
+
+<div class="card" id="summary"></div>
+
+<div class="card" id="bars"></div>
+
+<div class="card" id="analysis"></div>
+
+
+<button onclick="location.href='index.html'">
+🏠 Menu Utama
+</button>
+
+
+
+<script>
+
+const API_URL="https://uziefozgozmnckfssoyv.supabase.co";
+const API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aWVmb3pnb3ptbmNrZnNzb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTI5NTQsImV4cCI6MjA4NjY2ODk1NH0.YNfUm4BF3gKN3C0luUKN445BYcHYiD7OhAmkKTFOW-A";
+
+
+let students=[];
+let scores=[];
+
+
+
+// ================= LOAD =================
+async function loadData(){
+
+  const s1=await fetch(`${API_URL}/rest/v1/students?select=id,nama,kelas`,{
+    headers:{apikey:API_KEY,Authorization:`Bearer ${API_KEY}`}
+  });
+
+  students=await s1.json();
+
+
+  const s2=await fetch(`${API_URL}/rest/v1/scores?select=student_id,sifir,markah,teacher_id`,{
+    headers:{apikey:API_KEY,Authorization:`Bearer ${API_KEY}`}
+  });
+
+  scores=await s2.json();
+
+
+  // Isi kelas
+  const kelasSet=new Set();
+
+  students.forEach(s=>{
+    if(s.kelas) kelasSet.add(s.kelas);
+  });
+
+
+  const select=document.getElementById("kelasSelect");
+
+  select.innerHTML='<option value="">Semua Kelas</option>';
+
+  kelasSet.forEach(k=>{
+    const o=document.createElement("option");
+    o.value=k;
+    o.textContent=k;
+    select.appendChild(o);
+  });
+
+
+  updateDashboard();
+
+}
+
+
+
+// ================= UPDATE =================
+function updateDashboard(){
+
+  const kelas=document.getElementById("kelasSelect").value;
+
+
+  // Filter murid
+  const filtered = kelas===""
+    ? students
+    : students.filter(s=>s.kelas===kelas);
+
+
+  const total = filtered.length;
+
+
+  // Kira lulus penuh
+  let lulusSemua=0;
+
+
+  filtered.forEach(s=>{
+
+    let allOk=true;
+
+
+    for(let i=1;i<=12;i++){
+
+      const guruSet=new Set();
+
+
+      scores.forEach(r=>{
+
+        if(
+          r.student_id===s.id &&
+          r.sifir==i &&
+          r.markah==1
+        ){
+          guruSet.add(r.teacher_id);
+        }
+
+      });
+
+
+      if(guruSet.size<4){
+        allOk=false;
+      }
+
+    }
+
+
+    if(allOk) lulusSemua++;
+
+  });
+
+
+
+  // ===== SUMMARY =====
+  document.getElementById("summary").innerHTML=`
+
+    <h3>📌 Ringkasan</h3>
+
+    <div class="stat">
+      <span>Jumlah Murid</span>
+      <span>${total}</span>
+    </div>
+
+    <div class="stat">
+      <span>Lulus Semua Sifir</span>
+      <span class="ok">${lulusSemua}</span>
+    </div>
+
+  `;
+
+
+
+  // ===== BAR =====
+  let barHTML='<h3>📈 Prestasi Setiap Sifir</h3>';
+
+  let weak=[];
+
+
+  for(let i=1;i<=12;i++){
+
+    let pass=0;
+
+
+    filtered.forEach(s=>{
+
+      const guruSet=new Set();
+
+
+      scores.forEach(r=>{
+
+        if(
+          r.student_id===s.id &&
+          r.sifir==i &&
+          r.markah==1
+        ){
+          guruSet.add(r.teacher_id);
+        }
+
+      });
+
+
+      if(guruSet.size>=4) pass++;
+
+    });
+
+
+    const percent = total
+      ? Math.round((pass/total)*100)
+      : 0;
+
+
+    barHTML+=`
+
+      <div class="stat">
+        <span>Sifir ${i}</span>
+        <span>${percent}% (${pass}/${total})</span>
+      </div>
+
+      <div class="bar">
+        <div class="bar-fill" style="width:${percent}%"></div>
+      </div>
+
+    `;
+
+
+    if(percent<50){
+      weak.push(i);
+    }
+
+  }
+
+
+  document.getElementById("bars").innerHTML=barHTML;
+
+
+
+  // ===== ANALYSIS =====
+  let ana=`<h3>🧠 Analisis</h3>`;
+
+
+  if(weak.length){
+
+    ana+=`
+      <p class="warn">
+        ⚠️ Fokus Intervensi:
+        Sifir ${weak.join(", ")}
+      </p>
+    `;
+
+  }else{
+
+    ana+=`
+      <p class="ok">
+        🎉 Semua sifir melepasi 50%
+      </p>
+    `;
+
+  }
+
+
+  document.getElementById("analysis").innerHTML=ana;
+
+}
+
+
+
+// ================= START =================
+loadData();
+
+document.getElementById("kelasSelect")
+  .addEventListener("change",updateDashboard);
+
+</script>
+
+</body>
+</html>
